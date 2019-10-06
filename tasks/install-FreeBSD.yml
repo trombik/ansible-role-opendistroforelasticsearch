@@ -1,0 +1,6 @@
+---
+
+- name: Install opendistroforelasticsearch
+  pkgng:
+    name: opendistroforelasticsearch
+    state: present

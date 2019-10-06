@@ -1,0 +1,74 @@
+require "tempfile"
+require "pathname"
+
+ENV["TERM"] = "xterm" # XXX TERM must be defined or pkg_add fails
+
+test_dir = Pathname.new(__FILE__).dirname
+role_dir = Pathname.new(test_dir).parent.parent.parent
+role_name = Pathname.new(role_dir).basename
+
+def vagrant(cmd)
+  Bundler.with_clean_env do
+    sh "vagrant #{cmd}"
+  end
+end
+
+task default: %w[test]
+
+desc "run rspec"
+task test: [:clean, :prepare, :do_test, :ensure_clean] do
+end
+
+desc "clean"
+task clean: [:clean_vagrant, :clean_role] do
+end
+
+desc "destroy vagrant nodes"
+task :clean_vagrant do
+  # XXX `vagrant destroy` failes with exit status 1 when there is no VM to
+  # destroy
+  vagrant "destroy -f || true"
+end
+
+desc "rm roles/*"
+task :clean_role do
+  sh "rm -rf roles/*"
+  sh "rm -f *.retry"
+end
+
+desc "prepare the test environment"
+task prepare: [:prepare_role, :prepare_roles, :vagrant_up] do
+end
+
+desc "import required roles"
+task :prepare_roles do
+  sh "ansible-galaxy install -r requirements.yml -p roles"
+end
+
+desc "prepare role"
+task :prepare_role do
+  ignore = %w[vendor .kitchen .git tests spec].map { |f| "#{role_name}/#{f}" }
+  tmpfile = Tempfile.new(".tarignore")
+  tmpfile.write ignore.join("\n")
+  tmpfile.close
+  # rubocop:disable Metrics/LineLength
+  sh "tar -c -X #{tmpfile.path} -C #{role_dir.parent} -f - #{role_name} | " + "tar -x -C #{test_dir}/roles -f -"
+  # rubocop:enable Metrics/LineLength
+end
+
+desc "vagrant up"
+task :vagrant_up do
+  vagrant "up"
+end
+
+desc "do clean task even if it has been executed"
+task :ensure_clean do
+  Rake::Task["clean"].all_prerequisite_tasks.each(&:reenable)
+  Rake::Task["clean"].reenable
+  Rake::Task["clean"].invoke
+end
+
+desc "Do the test"
+task :do_test do
+  sh "bundle exec rspec"
+end

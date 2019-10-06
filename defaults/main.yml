@@ -1,0 +1,9 @@
+---
+opendistroforelasticsearch_user: opendistroforelasticsearch
+opendistroforelasticsearch_group: opendistroforelasticsearch
+opendistroforelasticsearch_log_dir: /var/log/opendistroforelasticsearch
+opendistroforelasticsearch_db_dir: "{{ __opendistroforelasticsearch_db_dir }}"
+opendistroforelasticsearch_service: opendistroforelasticsearch
+opendistroforelasticsearch_conf_dir: "{{ __opendistroforelasticsearch_conf_dir }}"
+opendistroforelasticsearch_conf_file: "{{ __opendistroforelasticsearch_conf_dir }}/opendistroforelasticsearch.conf"
+opendistroforelasticsearch_flags: ""

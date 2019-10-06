@@ -1,0 +1,3 @@
+---
+__opendistroforelasticsearch_db_dir: /var/db/opendistroforelasticsearch
+__opendistroforelasticsearch_conf_dir: /usr/local/etc/opendistroforelasticsearch

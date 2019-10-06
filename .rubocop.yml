@@ -1,0 +1,57 @@
+---
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    # there is no reason to test external files
+    - "roles.galaxy/**/*"
+    - "vendor/**/*"
+    - "tests/integration/**/roles/*"
+    - "extra_roles/**/*"
+    - "qansible"
+  # enable detailed explanations available in cops
+  # the default output is not enough to understand what is wrong
+  DisplayCopNames: true
+  ExtraDetails: true
+  DisplayStyleGuide: true
+
+  # the default CacheRootDirectory is no longer `/tmp`, but a directory under
+  # `$HOME` and some Unix platforms use symlink to that path
+  AllowSymlinksInCacheRootDirectory: true
+
+Style/StringLiterals:
+  # https://github.com/reallyenglish/ansible-role-example/issues/60#issuecomment-280573231
+  EnforcedStyle: double_quotes
+
+Style/SymbolArray:
+  # perefer brackets for `grep-ability`
+  EnforcedStyle: brackets
+
+Metrics/BlockLength:
+  Exclude:
+    # Vagrantfile is not application code, rather, configuration file and
+    # blocks in it tends to be long
+    - "**/Vagrantfile"
+  ExcludedMethods:
+    # these two exclude long blocks in `_spec.rb`
+    - describe
+    - context
+
+Metrics/LineLength:
+  Exclude:
+    # `_spec.rb` often contains one-liner shell command
+    - "**/*_spec.rb"
+    # same as in Metrics/BlockLength
+    - "**/Vagrantfile"
+    # Gemfile is not application code
+    - "Gemfile"
+  # ignore heredoc for readability
+  AllowHeredoc: true
+  # URLs are almost always long
+  AllowURI: true
+  URISchemes:
+    - http
+    - https
+    - git
+    - ftp
+  IgnoreCopDirectives: true

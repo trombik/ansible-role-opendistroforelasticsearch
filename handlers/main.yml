@@ -1,0 +1,6 @@
+---
+
+- name: Restart opendistroforelasticsearch
+  service:
+    name: opendistroforelasticsearch
+    state: restarted

@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-opendistroforelasticsearch
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install-{{ ansible_os_family }}.yml"
+
+- name: Create log directory
+  file:
+    path: "{{ opendistroforelasticsearch_log_dir }}"
+    mode: 0755
+    owner: "{{ opendistroforelasticsearch_user }}"
+    group: "{{ opendistroforelasticsearch_group }}"
+    state: directory
+  notify: Restart opendistroforelasticsearch
+
+- name: Create db directory
+  file:
+    path: "{{ opendistroforelasticsearch_db_dir }}"
+    mode: 0755
+    owner: "{{ opendistroforelasticsearch_user }}"
+    group: "{{ opendistroforelasticsearch_group }}"
+    state: directory
+  notify: Restart opendistroforelasticsearch
+
+- name: Create opendistroforelasticsearch.conf
+  template:
+    src: opendistroforelasticsearch.conf.j2
+    dest: "{{ opendistroforelasticsearch_conf_file }}"
+    validate: echo %s
+  notify: Restart opendistroforelasticsearch
+
+- name: Start opendistroforelasticsearch
+  service:
+    name: "{{ opendistroforelasticsearch_service }}"
+    enabled: true
+    state: started

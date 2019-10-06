@@ -1,0 +1,9 @@
+[client]
+192.168.21.100
+
+[server]
+192.168.21.200
+
+[all:children]
+server
+client

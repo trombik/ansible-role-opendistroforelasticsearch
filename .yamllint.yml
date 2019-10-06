@@ -1,0 +1,10 @@
+---
+extends: default
+
+rules:
+  line-length: disable
+  truthy: disable
+
+ignore: |
+  # yamllint does not understand erb template
+  .kitchen.local.yml

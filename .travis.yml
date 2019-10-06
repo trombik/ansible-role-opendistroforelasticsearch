@@ -1,0 +1,87 @@
+---
+language: python
+python: "3.6"
+
+# Use the new container infrastructure
+sudo: false
+
+# Install ansible
+addons:
+  apt:
+    packages:
+      - python-pip
+      - curl
+cache:
+  directories:
+    - $HOME/.rvm/
+    - $HOME/.bundler/
+    - $HOME/.cache/pip/
+
+before_install:
+  # XXX update RubyGem to fix build in Travis CI. when ruby 2.6.3 or later is
+  # available in travis environment, this can be removed.
+  # see details at:
+  # https://bundler.io/blog/2019/05/14/solutions-for-cant-find-gem-bundler-with-executable-bundle.html
+  - gem update --system
+
+install:
+  # Install ansible
+  - pip install ansible yamllint
+
+  # Check ansible version
+  - ansible --version
+
+  # Create ansible.cfg with correct roles_path
+  - mkdir -p extra_roles
+  - printf '[defaults]\nroles_path=../:extra_roles' >ansible.cfg
+
+script:
+  # See if the repo is private
+  - if curl --silent --output /dev/null --dump-header - "https://github.com/${TRAVIS_REPO_SLUG}" | grep "Status:[[:space:]]*404"; then touch .private_repo; fi
+
+  # Download depended roles
+  - if [ -f requirements.yml ]; then ansible-galaxy install -r requirements.yml -p extra_roles; fi
+
+  # Basic role syntax check
+  #
+  # If it is a private repo, it _usually_ has secret information, or encrypted
+  # file. As the information security policy does not allow decryption key to
+  # be transfered to third-party, encrypted files cannot be decrypted in travis
+  # CI environment. Skip syntax check when it is a private repo.
+  #
+  - "if [ ! -f .private_repo ]; then ansible-playbook tests/travisci/tests.yml -i tests/travisci/inventory --syntax-check; fi"
+
+  # download the QA scripts
+  - git clone https://github.com/trombik/qansible.git
+
+  # checkout the latest release
+  - ( cd qansible && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)) )
+
+  # install it
+  - ( cd qansible && bundle install --path ${HOME}/.bundler --with "test" && bundle exec rake build && gem install pkg/*.gem )
+  - rm -rf qansible
+
+  # git complains if user and email are not set
+  - git config --global user.name "Your Name"
+  - git config --global user.email "you@example.com"
+
+  # surpress a warning from `qansible qa
+  - touch .kitchen.local.yml
+
+  # export PATH
+  - export PATH="${PATH}:`rvm gemdir`/bin"
+
+  # bundle up because rubocop is installed via Gemfile
+  - bundle install --path ${HOME}/.bundler
+
+  # run rubocop
+  - bundle exec rubocop
+
+  # run yamllint
+  - yamllint -c .yamllint.yml .
+
+  # run the QA test
+  - qansible qa
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

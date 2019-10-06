@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: opendistroforelasticsearch
+  author: Tomoyuki Sakurai
+  description: Configures something
+  company: N/A
+  license: BSD
+  min_ansible_version: 2.0
+  platforms:
+    - name: FreeBSD
+      versions:
+        - 12.0
+  galaxy_tags:
+    - system
