@@ -1,6 +1,6 @@
 ---
 
-- name: Install opendistroforelasticsearch
+- name: Install elasticsearch
   pkgng:
-    name: opendistroforelasticsearch
+    name: "{{ opendistroforelasticsearch_package }}"
     state: present

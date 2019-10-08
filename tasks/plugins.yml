@@ -1,0 +1,52 @@
+---
+
+- name: Register installed plugins
+  shell: "{{ opendistroforelasticsearch_plugin_command }} list"
+  environment:
+    JAVA_HOME: "{{ opendistroforelasticsearch_java_home }}"
+  register: shell_output
+  changed_when: False
+
+- name: Create plugins directory
+  file:
+    path: "{{ opendistroforelasticsearch_plugins_dir }}"
+    # owner: "{{ opendistroforelasticsearch_user }}"
+    # group: "{{ opendistroforelasticsearch_group }}"
+    state: directory
+
+- name: Install plugins
+  command: "{{ opendistroforelasticsearch_plugin_command }} install --batch {% if 'src' in item %}{{ item.src }}{% else %}{{ item.name }}{% endif %}"
+  environment:
+    JAVA_HOME: "{{ opendistroforelasticsearch_java_home }}"
+  with_items: "{{ opendistroforelasticsearch_plugins }}"
+  when:
+    - "(not 'state' in item ) or (item['state'] == 'present')"
+    - "not (shell_output.stdout | search(item['name']))"
+
+- name: Create basedir of opendistroforelasticsearch_extra_files
+  file:
+    path: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path | dirname }}"
+    state: directory
+  with_items: "{{ opendistroforelasticsearch_extra_files }}"
+  when:
+    - "(not 'state' in item) or (item['state'] == 'present')"
+
+- name: Create opendistroforelasticsearch_extra_files
+  template:
+    src: "{{ item.type }}.j2"
+    dest: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path }}"
+    mode: "{{ item.mode | default(omit) }}"
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+  with_items: "{{ opendistroforelasticsearch_extra_files }}"
+  when:
+    - "(not 'state' in item) or (item['state'] == 'present')"
+
+- name: Delete opendistroforelasticsearch_extra_files
+  file:
+    path: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path }}"
+    state: absent
+  with_items: "{{ opendistroforelasticsearch_extra_files }}"
+  when:
+    - "'state' in item"
+    - "item['state'] == 'absent'"

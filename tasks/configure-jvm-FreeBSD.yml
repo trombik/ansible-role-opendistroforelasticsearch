@@ -1,0 +1,23 @@
+---
+
+- name: Create /etc/rc.conf.d if it does not exist
+  file:
+    path: /etc/rc.conf.d
+    mode: 0755
+    state: directory
+
+- name: Create rc.subr flagment
+  template:
+    src: FreeBSD.rc.j2
+    dest: /etc/rc.conf.d/opendistroforelasticsearch
+    mode: 0644
+    validate: sh -n %s
+  notify:
+    - Restart opendistroforelasticsearch
+
+- name: Create jvm.options
+  template:
+    src: jvm.options.j2
+    dest: "{{ opendistroforelasticsearch_conf_dir }}/jvm.options"
+  notify:
+    - Restart opendistroforelasticsearch

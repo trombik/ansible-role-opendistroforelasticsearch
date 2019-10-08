@@ -1,37 +1,31 @@
 ---
-# tasks file for ansible-role-opendistroforelasticsearch
+# tasks file for ansible-role-elasticsearch
 
-- include_vars: "{{ ansible_os_family }}.yml"
+- name: "Include {{ ansible_os_family }}.yml"
+  include_vars: "{{ ansible_os_family }}.yml"
 
-- include: "install-{{ ansible_os_family }}.yml"
+- name: "Include install-{{ ansible_os_family }}.yml"
+  include: "install-{{ ansible_os_family }}.yml"
 
-- name: Create log directory
-  file:
-    path: "{{ opendistroforelasticsearch_log_dir }}"
-    mode: 0755
-    owner: "{{ opendistroforelasticsearch_user }}"
-    group: "{{ opendistroforelasticsearch_group }}"
-    state: directory
-  notify: Restart opendistroforelasticsearch
+- name: "Include configure.yml"
+  include: configure.yml
 
-- name: Create db directory
-  file:
-    path: "{{ opendistroforelasticsearch_db_dir }}"
-    mode: 0755
-    owner: "{{ opendistroforelasticsearch_user }}"
-    group: "{{ opendistroforelasticsearch_group }}"
-    state: directory
-  notify: Restart opendistroforelasticsearch
+- name: "Include configure-jvm-{{ ansible_os_family }}.yml"
+  include: "configure-jvm-{{ ansible_os_family }}.yml"
 
-- name: Create opendistroforelasticsearch.conf
-  template:
-    src: opendistroforelasticsearch.conf.j2
-    dest: "{{ opendistroforelasticsearch_conf_file }}"
-    validate: echo %s
-  notify: Restart opendistroforelasticsearch
+- name: "Include plugins.yml"
+  include: plugins.yml
 
 - name: Start opendistroforelasticsearch
   service:
     name: "{{ opendistroforelasticsearch_service }}"
-    enabled: true
     state: started
+    enabled: yes
+  register: register_elasticsearch_start
+
+- name: Wait for elasticsearch to start in task
+  wait_for:
+    host: localhost
+    port: "{{ opendistroforelasticsearch_http_port }}"
+  when:
+    - register_elasticsearch_start.changed

@@ -1,6 +1,8 @@
 ---
 driver:
   name: vagrant
+  customize:
+    memory: 2048
 
 transport:
   name: rsync
@@ -13,7 +15,7 @@ provisioner:
   ansible_verbosity: 1
   ansible_verbose: true
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
-  # requirements_path: requirements.yml
+  requirements_path: requirements.yml
   http_proxy: <%= ENV['ANSIBLE_PROXY'] %>
   idempotency_test: true
   additional_copy_path:

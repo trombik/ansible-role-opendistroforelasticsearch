@@ -8,9 +8,44 @@ None
 
 # Role Variables
 
-| variable | description | default |
+| Variable | Description | Default |
 |----------|-------------|---------|
+| `opendistroforelasticsearch_user` | | `{{ __opendistroforelasticsearch_user }}` |
+| `opendistroforelasticsearch_group` | | `{{ __opendistroforelasticsearch_group }}` |
+| `opendistroforelasticsearch_log_dir` | | `{{ __opendistroforelasticsearch_log_dir }}` |
+| `opendistroforelasticsearch_db_dir` | | `{{ __opendistroforelasticsearch_db_dir }}` |
+| `opendistroforelasticsearch_scripts_dir` | | `{{ __opendistroforelasticsearch_scripts_dir }}` |
+| `opendistroforelasticsearch_plugins_dir` | | `{{ __opendistroforelasticsearch_plugins_dir }}` |
+| `opendistroforelasticsearch_plugin_command` | | `{{ __opendistroforelasticsearch_plugin_command }}` |
+| `opendistroforelasticsearch_plugins` | | `[]` |
+| `opendistroforelasticsearch_service` | | `{{ __opendistroforelasticsearch_service }}` |
+| `opendistroforelasticsearch_package` | | `{{ __opendistroforelasticsearch_package }}` |
+| `opendistroforelasticsearch_conf_dir` | | `{{ __opendistroforelasticsearch_conf_dir }}` |
+| `opendistroforelasticsearch_jvm_options` | | `""` |
+| `opendistroforelasticsearch_conf_file` | | `{{ opendistroforelasticsearch_conf_dir }}/elasticsearch.yml` |
+| `opendistroforelasticsearch_flags` | | `""` |
+| `opendistroforelasticsearch_config` | | `""` |
+| `opendistroforelasticsearch_http_port` | | `9200` |
+| `opendistroforelasticsearch_java_home` | | `{{ __opendistroforelasticsearch_java_home }}` |
+| `opendistroforelasticsearch_extra_files` | | `[]` |
 
+
+## FreeBSD
+
+| Variable | Default |
+|----------|---------|
+| `__opendistroforelasticsearch_user` | `elasticsearch` |
+| `__opendistroforelasticsearch_group` | `elasticsearch` |
+| `__opendistroforelasticsearch_log_dir` | `/var/log/elasticsearch` |
+| `__opendistroforelasticsearch_db_dir` | `/var/db/elasticsearch` |
+| `__opendistroforelasticsearch_package` | `textproc/opendistroforelasticsearch` |
+| `__opendistroforelasticsearch_conf_dir` | `/usr/local/etc/elasticsearch` |
+| `__opendistroforelasticsearch_scripts_dir` | `""` |
+| `__opendistroforelasticsearch_plugins_dir` | `/usr/local/lib/elasticsearch/plugins` |
+| `__opendistroforelasticsearch_plugin_command` | `/usr/local/lib/elasticsearch/bin/elasticsearch-plugin` |
+| `__opendistroforelasticsearch_service` | `elasticsearch` |
+| `__opendistroforelasticsearch_jvm_options_dir` | `/usr/local/etc` |
+| `__opendistroforelasticsearch_java_home` | `/usr/local` |
 
 # Dependencies
 

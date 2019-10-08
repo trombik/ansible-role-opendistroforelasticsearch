@@ -1,0 +1,21 @@
+---
+
+- name: Install apt-transport-https
+  apt:
+    name: apt-transport-https
+    state: present
+
+- name: Add public key from elasticsearch
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Add elasticsearch apt repository
+  apt_repository:
+    repo: deb https://packages.elastic.co/elasticsearch/2.x/debian stable main
+    state: present
+
+- name: Install elasticsearch
+  apt:
+    name: "{{ elasticsearch_package }}"
+    state: present

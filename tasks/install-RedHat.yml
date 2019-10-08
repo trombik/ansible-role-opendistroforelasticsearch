@@ -1,0 +1,11 @@
+---
+
+- name: Install Java 8
+  yum:
+    name: java-1.8.0-openjdk.x86_64
+    state: present
+
+- name: Install elasticsearch
+  yum:
+    name: elasticsearch
+    state: present
