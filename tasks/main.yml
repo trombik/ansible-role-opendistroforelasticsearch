@@ -79,30 +79,30 @@
     - "(not 'state' in item ) or (item['state'] == 'present')"
     - "not (shell_output.stdout | search(item['name']))"
 
-- name: Create basedir of opendistroforelasticsearch_extra_files
+- name: Create basedir of opendistroforelasticsearch_extra_plugin_files
   file:
     path: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path | dirname }}"
     state: directory
-  with_items: "{{ opendistroforelasticsearch_extra_files }}"
+  with_items: "{{ opendistroforelasticsearch_extra_plugin_files }}"
   when:
     - "(not 'state' in item) or (item['state'] == 'present')"
 
-- name: Create opendistroforelasticsearch_extra_files
+- name: Create opendistroforelasticsearch_extra_plugin_files
   template:
     src: "{{ item.type }}.j2"
     dest: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path }}"
     mode: "{{ item.mode | default(omit) }}"
     owner: "{{ item.owner | default(omit) }}"
     group: "{{ item.group | default(omit) }}"
-  with_items: "{{ opendistroforelasticsearch_extra_files }}"
+  with_items: "{{ opendistroforelasticsearch_extra_plugin_files }}"
   when:
     - "(not 'state' in item) or (item['state'] == 'present')"
 
-- name: Delete opendistroforelasticsearch_extra_files
+- name: Delete opendistroforelasticsearch_extra_plugin_files
   file:
     path: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path }}"
     state: absent
-  with_items: "{{ opendistroforelasticsearch_extra_files }}"
+  with_items: "{{ opendistroforelasticsearch_extra_plugin_files }}"
   when:
     - "'state' in item"
     - "item['state'] == 'absent'"

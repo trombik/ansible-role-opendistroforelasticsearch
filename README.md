@@ -27,7 +27,7 @@ None
 | `opendistroforelasticsearch_config` | | `""` |
 | `opendistroforelasticsearch_http_port` | | `9200` |
 | `opendistroforelasticsearch_java_home` | | `{{ __opendistroforelasticsearch_java_home }}` |
-| `opendistroforelasticsearch_extra_files` | | `[]` |
+| `opendistroforelasticsearch_extra_plugin_files` | | `[]` |
 
 
 ## FreeBSD
@@ -134,7 +134,7 @@ None
     opendistroforelasticsearch_plugins:
       - name: opendistro_security
         src: https://d3g5vo6xdbdb9a.cloudfront.net/downloads/elasticsearch-plugins/opendistro-security/opendistro_security-1.2.0.0.zip
-    opendistroforelasticsearch_extra_files:
+    opendistroforelasticsearch_extra_plugin_files:
       - path: opendistro_security/securityconfig/roles.yml
         type: yaml
         content:
