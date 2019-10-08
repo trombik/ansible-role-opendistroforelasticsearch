@@ -39,6 +39,13 @@
     group: "{{ opendistroforelasticsearch_group }}"
     state: directory
 
+- name: Create jvm.options
+  template:
+    src: jvm.options.j2
+    dest: "{{ opendistroforelasticsearch_conf_dir }}/jvm.options"
+  notify:
+    - Restart opendistroforelasticsearch
+
 - name: Create elasticsearch.yml
   template:
     src: elasticsearch.yml.j2
@@ -48,9 +55,6 @@
     group: "{{ opendistroforelasticsearch_group }}"
   notify:
     - Restart opendistroforelasticsearch
-
-- name: "Include configure-jvm-{{ ansible_os_family }}.yml"
-  include: "configure-jvm-{{ ansible_os_family }}.yml"
 
 - name: Register installed plugins
   shell: "{{ opendistroforelasticsearch_plugin_command }} list"
