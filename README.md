@@ -2,6 +2,14 @@
 
 `ansible` role to manage `opendistroforelasticsearch`.
 
+## for FreeBSD users
+
+`textproc/opendistroforelasticsearch` is not currently available in the
+official ports tree. A WIP port is available at
+[trombik/opendistroforelasticsearch](https://github.com/trombik/opendistroforelasticsearch).
+The package must be available for installation at somewhere, i.e. in YOUR
+package tree.
+
 # Requirements
 
 None
