@@ -1,21 +1,16 @@
 ---
 
-- name: Install apt-transport-https
+- name: Install opendistroforelasticsearch_extra_packages
   apt:
-    name: apt-transport-https
+    name: "{{ opendistroforelasticsearch_extra_packages }}"
     state: present
 
-- name: Add public key from elasticsearch
-  apt_key:
-    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-    state: present
-
-- name: Add elasticsearch apt repository
-  apt_repository:
-    repo: deb https://packages.elastic.co/elasticsearch/2.x/debian stable main
-    state: present
-
-- name: Install elasticsearch
+- name: Install opendistroforelasticsearch_package
   apt:
-    name: "{{ elasticsearch_package }}"
+    name: "{{ opendistroforelasticsearch_package }}"
     state: present
+
+- name: Create default/elasticsearch
+  template:
+    src: Debian.default.j2
+    dest: /etc/default/elasticsearch
