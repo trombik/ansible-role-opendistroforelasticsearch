@@ -9,3 +9,4 @@ ignore: |
   # yamllint does not understand erb template
   .kitchen.local.yml
   extra_roles/*
+  /.kitchen/*
