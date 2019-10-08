@@ -34,6 +34,11 @@ platforms:
       extra_vars:
         ansible_python_interpreter: '/usr/local/bin/python'
 
+  - name: ubuntu-18.04-amd64
+    driver:
+      box: trombik/ansible-ubuntu-18.04-amd64
+      box_check_update: false
+
 suites:
   - name: default
     provisioner:
