@@ -1,6 +1,6 @@
-# ansible-role-opendistroforelasticsearch
+# `trombik.opendistroforelasticsearch`
 
-A brief description of the role goes here.
+`ansible` role to manage `opendistroforelasticsearch`.
 
 # Requirements
 
