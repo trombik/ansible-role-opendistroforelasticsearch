@@ -10,5 +10,8 @@ galaxy_info:
     - name: FreeBSD
       versions:
         - 12.0
+    - name: Ubuntu
+      versions:
+        - bionic
   galaxy_tags:
     - elasticsearch

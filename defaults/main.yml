@@ -9,6 +9,7 @@ opendistroforelasticsearch_plugin_command: "{{ __opendistroforelasticsearch_plug
 opendistroforelasticsearch_plugins: []
 opendistroforelasticsearch_service: "{{ __opendistroforelasticsearch_service }}"
 opendistroforelasticsearch_package: "{{ __opendistroforelasticsearch_package }}"
+opendistroforelasticsearch_extra_packages: []
 opendistroforelasticsearch_conf_dir: "{{ __opendistroforelasticsearch_conf_dir }}"
 opendistroforelasticsearch_jvm_options: ""
 opendistroforelasticsearch_conf_file: "{{ opendistroforelasticsearch_conf_dir }}/elasticsearch.yml"
