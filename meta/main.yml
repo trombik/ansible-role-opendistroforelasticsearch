@@ -13,5 +13,8 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - bionic
+    - name: EL
+      versions:
+        - 7
   galaxy_tags:
     - elasticsearch
