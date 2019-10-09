@@ -52,7 +52,6 @@ None
 | `__opendistroforelasticsearch_plugins_dir` | `/usr/local/lib/elasticsearch/plugins` |
 | `__opendistroforelasticsearch_plugin_command` | `/usr/local/lib/elasticsearch/bin/elasticsearch-plugin` |
 | `__opendistroforelasticsearch_service` | `elasticsearch` |
-| `__opendistroforelasticsearch_jvm_options_dir` | `/usr/local/etc` |
 | `__opendistroforelasticsearch_java_home` | `/usr/local` |
 
 # Dependencies
@@ -67,6 +66,9 @@ None
   roles:
     - role: trombik.freebsd_pkg_repo
       when: ansible_os_family == "FreeBSD"
+    - role: trombik.apt_repo
+      when: ansible_os_family == "Debian"
+    - role: trombik.java
     - role: trombik.sysctl
     - ansible-role-opendistroforelasticsearch
   vars:
@@ -77,13 +79,44 @@ None
         mirror_type: none
         priority: 100
         state: present
+    apt_repo_enable_apt_transport_https: yes
+    apt_repo_to_add:
+      - ppa:openjdk-r/ppa
+      - deb [arch=amd64] https://d3g5vo6xdbdb9a.cloudfront.net/apt stable main
+      - deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main
+    apt_repo_keys_to_add:
+      - https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      - https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+    os_opendistroforelasticsearch_extra_packages:
+      FreeBSD: []
+      Debian:
+        # XXX install 7.2.0 becasue the current opendistroforelasticsearch
+        # depends on 7.2.0, but the latest elasticsearch-oss is 7.4.0
+        #
+        # opendistroforelasticsearch : Depends: elasticsearch-oss (= 7.2.0) but 7.4.0 is to be installed
+        - elasticsearch-oss=7.2.0
+    opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
+    os_java_packages:
+      FreeBSD: []
+      Debian:
+        - openjdk-11-jdk
+    java_packages: "{{ os_java_packages[ansible_os_family] }}"
     os_sysctl:
       FreeBSD:
         kern.maxfilesperproc: 65536
         security.bsd.unprivileged_mlock: 1
+      Debian: []
     sysctl: "{{ os_sysctl[ansible_os_family] }}"
-    opendistroforelasticsearch_flags: |
-      elasticsearch_java_home='{{ opendistroforelasticsearch_java_home }}'
+
+    os_opendistroforelasticsearch_flags:
+      FreeBSD: |
+        elasticsearch_java_home={{ opendistroforelasticsearch_java_home }}
+      Debian: |
+        ES_PATH_CONF={{ opendistroforelasticsearch_conf_dir }}
+        ES_STARTUP_SLEEP_TIME=5
+        MAX_OPEN_FILES=65535
+        MAX_LOCKED_MEMORY=unlimited
+    opendistroforelasticsearch_flags: "{{ os_opendistroforelasticsearch_flags[ansible_os_family] }}"
     opendistroforelasticsearch_jvm_options: |
       -Xms1024m
       -Xmx1024m
@@ -107,18 +140,8 @@ None
       -Djava.io.tmpdir=${ES_TMPDIR}
       -XX:+HeapDumpOnOutOfMemoryError
       -XX:HeapDumpPath=data
-      -XX:ErrorFile=logs/hs_err_pid%p.log
+      -XX:ErrorFile={{ opendistroforelasticsearch_log_dir }}/hs_err_pid%p.log
       -XX:+UseCompressedOops
-      8:-XX:+PrintGCDetails
-      8:-XX:+PrintGCDateStamps
-      8:-XX:+PrintTenuringDistribution
-      8:-XX:+PrintGCApplicationStoppedTime
-      8:-Xloggc:${ES_TMPDIR}/gc.log
-      8:-XX:+UseGCLogFileRotation
-      8:-XX:NumberOfGCLogFiles=32
-      8:-XX:GCLogFileSize=64m
-      9-:-Xlog:gc*,gc+age=trace,safepoint:file=logs/gc.log:utctime,pid,tags:filecount=32,filesize=64m
-      9-:-Djava.locale.providers=COMPAT
     opendistroforelasticsearch_config:
       opendistro_security.disabled: true
       discovery.type: single-node
