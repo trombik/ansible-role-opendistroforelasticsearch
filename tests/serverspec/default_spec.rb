@@ -21,7 +21,7 @@ extra_files = %w[
   opendistro_security/securityconfig/config.yml
 ]
 
-es_plugin_command = "/usr/share/elasticsearch/bin/plugin"
+es_plugin_command = "/usr/share/elasticsearch/bin/elasticsearch-plugin"
 es_plugins_directory = "/usr/share/elasticsearch/plugins"
 es_data_directory = "/var/lib/elasticsearch"
 es_log_directory  = "/var/log/elasticsearch"
@@ -35,7 +35,7 @@ when "freebsd"
   es_plugins_directory = "/usr/local/lib/elasticsearch/plugins"
   es_data_directory = "/var/db/elasticsearch"
   java_home = "/usr/local"
-  jvm_option = "/usr/local/etc/jvm.options"
+  jvm_option = "/usr/local/etc/elasticsearch/jvm.options"
 when "openbsd"
   default_group = "wheel"
   es_user_name = "_elasticsearch"
@@ -61,11 +61,6 @@ describe file(es_log_directory) do
   it { should be_mode 755 }
 end
 
-describe file "#{es_log_directory}/gc.log" do
-  it { should be_file }
-  it { should be_mode 644 }
-end
-
 describe service(es_service_name) do
   it { should be_running }
 end
@@ -83,6 +78,8 @@ end
 describe file jvm_option do
   it { should be_file }
   it { should be_mode 644 }
+  it { should be_owned_by es_user_name }
+  it { should be_grouped_into es_user_group }
   its(:content) { should match(Regexp.escape("-XX:+UseCompressedOops")) }
 end
 
@@ -102,20 +99,6 @@ when "freebsd"
     it { should be_grouped_into default_group }
     its(:content) { should match(/^elasticsearch_java_home=/) }
   end
-
-  describe file("/usr/local/etc/elasticsearch/jvm.options") do
-    its(:content) { should match Regexp.escape("-XX:+UseCompressedOops") }
-  end
-
-  #  XXX `process` does not support FreeBSD's `ps(1)`
-  #
-  #  describe process("/usr/local/openjdk8/bin/java") do
-  #    it { should be_running }
-  #    its(:args) { should match(Regexp.escape("-XX:+UseCompressedOops")) }
-  #  end
-  describe command("ps axww") do
-    its(:stdout) { should match(/#{ Regexp.escape("/usr/local/openjdk8/bin/java") }\s+.*#{ Regexp.escape("-XX:+UseCompressedOops") }/) }
-  end
 when "ubuntu"
   describe file("/etc/default/elasticsearch") do
     it { should be_file }
@@ -125,11 +108,6 @@ when "ubuntu"
     its(:content) { should match(/Managed by ansible/) }
     its(:content) { should match(/MAX_OPEN_FILES=65535/) }
   end
-
-  describe process("java") do
-    it { should be_running }
-    its(:args) { should match(Regexp.escape("-XX:+UseCompressedOops")) }
-  end
 when "redhat"
   describe file("/etc/sysconfig/elasticsearch") do
     it { should be_file }
@@ -138,11 +116,6 @@ when "redhat"
     it { should be_grouped_into default_group }
     its(:content) { should match(/^ES_JAVA_OPTS=\"#{ Regexp.escape("-XX:+UseCompressedOops") }\"$/) }
   end
-
-  describe process("java") do
-    it { should be_running }
-    its(:args) { should match(Regexp.escape("-XX:+UseCompressedOops")) }
-  end
 when "openbsd"
   describe file("/etc/elasticsearch/jvm.in") do
     it { should be_file }
@@ -150,14 +123,6 @@ when "openbsd"
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
     its(:content) { should match(/JAVA_OPTS=\"#{ Regexp.escape("-XX:+UseCompressedOops") }\"$/) }
-  end
-
-  # XXX same issue as FreeBSD
-  # -Xms257m -Xmx1024m
-  describe command("ps axww") do
-    its(:stdout) { should match(/#{ Regexp.escape("/usr/local/jdk-1.8.0/bin/java") }\s+.*#{ Regexp.escape("-XX:+UseCompressedOops") }/) }
-    its(:stdout) { should match(/#{ Regexp.escape("/usr/local/jdk-1.8.0/bin/java") }\s+.*#{ Regexp.escape("-Xms257m") }/) }
-    its(:stdout) { should match(/#{ Regexp.escape("/usr/local/jdk-1.8.0/bin/java") }\s+.*#{ Regexp.escape("-Xmx1024m") }/) }
   end
 end
 
@@ -193,10 +158,7 @@ end
 plugins.each do |p|
   describe command("env JAVA_HOME=#{java_home} #{es_plugin_command} list") do
     its(:stdout) { should match(/^#{p}$/) }
-    its(:stderr) do
-      pending "ES warns that future versions of Elasticsearch will require Java 11; your Java version from [/usr/local/openjdk8/jre] does not meet this requirement"
-      should eq ""
-    end
+    its(:stderr) { should eq "" }
     its(:exit_status) { should eq 0 }
   end
 end

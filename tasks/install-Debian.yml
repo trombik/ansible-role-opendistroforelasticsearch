@@ -14,3 +14,6 @@
   template:
     src: Debian.default.j2
     dest: /etc/default/elasticsearch
+    owner: root
+    group: root
+    mode: 0644
