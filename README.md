@@ -37,6 +37,21 @@ None
 | `opendistroforelasticsearch_java_home` | | `{{ __opendistroforelasticsearch_java_home }}` |
 | `opendistroforelasticsearch_extra_plugin_files` | | `[]` |
 
+## Debian
+
+| Variable | Default |
+|----------|---------|
+| `__opendistroforelasticsearch_user` | `elasticsearch` |
+| `__opendistroforelasticsearch_group` | `elasticsearch` |
+| `__opendistroforelasticsearch_log_dir` | `/var/log/elasticsearch` |
+| `__opendistroforelasticsearch_db_dir` | `/var/lib/elasticsearch` |
+| `__opendistroforelasticsearch_package` | `opendistroforelasticsearch` |
+| `__opendistroforelasticsearch_conf_dir` | `/etc/elasticsearch` |
+| `__opendistroforelasticsearch_scripts_dir` | `""` |
+| `__opendistroforelasticsearch_plugins_dir` | `/usr/share/elasticsearch/plugins` |
+| `__opendistroforelasticsearch_plugin_command` | `/usr/share/elasticsearch/bin/elasticsearch-plugin` |
+| `__opendistroforelasticsearch_service` | `elasticsearch` |
+| `__opendistroforelasticsearch_java_home` | `""` |
 
 ## FreeBSD
 
@@ -54,6 +69,22 @@ None
 | `__opendistroforelasticsearch_service` | `elasticsearch` |
 | `__opendistroforelasticsearch_java_home` | `/usr/local` |
 
+## RedHat
+
+| Variable | Default |
+|----------|---------|
+| `__opendistroforelasticsearch_user` | `elasticsearch` |
+| `__opendistroforelasticsearch_group` | `elasticsearch` |
+| `__opendistroforelasticsearch_log_dir` | `/var/log/elasticsearch` |
+| `__opendistroforelasticsearch_db_dir` | `/var/lib/elasticsearch` |
+| `__opendistroforelasticsearch_package` | `opendistroforelasticsearch` |
+| `__opendistroforelasticsearch_conf_dir` | `/etc/elasticsearch` |
+| `__opendistroforelasticsearch_scripts_dir` | `""` |
+| `__opendistroforelasticsearch_plugins_dir` | `/usr/share/elasticsearch/plugins` |
+| `__opendistroforelasticsearch_plugin_command` | `/usr/share/elasticsearch/bin/elasticsearch-plugin` |
+| `__opendistroforelasticsearch_service` | `elasticsearch` |
+| `__opendistroforelasticsearch_java_home` | `""` |
+
 # Dependencies
 
 None
@@ -68,6 +99,8 @@ None
       when: ansible_os_family == "FreeBSD"
     - role: trombik.apt_repo
       when: ansible_os_family == "Debian"
+    - role: trombik.redhat_repo
+      when: ansible_os_family == "RedHat"
     - role: trombik.java
     - role: trombik.sysctl
     - ansible-role-opendistroforelasticsearch
@@ -87,6 +120,17 @@ None
     apt_repo_keys_to_add:
       - https://artifacts.elastic.co/GPG-KEY-elasticsearch
       - https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+    redhat_repo:
+      elasticsearch7:
+        baseurl: https://artifacts.elastic.co/packages/oss-7.x/yum
+        gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        gpgcheck: yes
+        enabled: yes
+      opendistroforelasticsearch:
+        baseurl: https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
+        gpgkey: https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+        enabled: yes
+        gpgcheck: yes
     os_opendistroforelasticsearch_extra_packages:
       FreeBSD: []
       Debian:
@@ -95,23 +139,38 @@ None
         #
         # opendistroforelasticsearch : Depends: elasticsearch-oss (= 7.2.0) but 7.4.0 is to be installed
         - elasticsearch-oss=7.2.0
+      RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
     os_java_packages:
       FreeBSD: []
       Debian:
         - openjdk-11-jdk
+      RedHat:
+        - java-11-openjdk-devel
     java_packages: "{{ os_java_packages[ansible_os_family] }}"
     os_sysctl:
       FreeBSD:
         kern.maxfilesperproc: 65536
         security.bsd.unprivileged_mlock: 1
       Debian: []
+      RedHat: []
     sysctl: "{{ os_sysctl[ansible_os_family] }}"
 
+
+    os_opendistroforelasticsearch_package:
+      FreeBSD: "{{ __opendistroforelasticsearch_package }}"
+      Debian: "{{ __opendistroforelasticsearch_package }}"
+      RedHat: opendistroforelasticsearch-1.2.0-1
+    opendistroforelasticsearch_package: "{{ os_opendistroforelasticsearch_package[ansible_os_family] }}"
     os_opendistroforelasticsearch_flags:
       FreeBSD: |
         elasticsearch_java_home={{ opendistroforelasticsearch_java_home }}
       Debian: |
+        ES_PATH_CONF={{ opendistroforelasticsearch_conf_dir }}
+        ES_STARTUP_SLEEP_TIME=5
+        MAX_OPEN_FILES=65535
+        MAX_LOCKED_MEMORY=unlimited
+      RedHat: |
         ES_PATH_CONF={{ opendistroforelasticsearch_conf_dir }}
         ES_STARTUP_SLEEP_TIME=5
         MAX_OPEN_FILES=65535
