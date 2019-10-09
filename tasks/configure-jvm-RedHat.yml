@@ -1,8 +1,0 @@
----
-
-- name: Add ES_JAVA_OPTS to /etc/sysconfig/elasticsearch
-  lineinfile:
-    dest: /etc/sysconfig/elasticsearch
-    regexp: '^#?ES_JAVA_OPTS='
-    line: 'ES_JAVA_OPTS="{{ elasticsearch_jvm_options | join(" ") }}"'
-  notify: Restart elasticsearch
