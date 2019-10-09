@@ -43,6 +43,9 @@
   template:
     src: jvm.options.j2
     dest: "{{ opendistroforelasticsearch_conf_dir }}/jvm.options"
+    owner: "{{ opendistroforelasticsearch_user }}"
+    group: "{{ opendistroforelasticsearch_group }}"
+    mode: 0644
   notify:
     - Restart opendistroforelasticsearch
 
