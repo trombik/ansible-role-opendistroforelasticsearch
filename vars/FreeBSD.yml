@@ -9,5 +9,4 @@ __opendistroforelasticsearch_scripts_dir: ""
 __opendistroforelasticsearch_plugins_dir: "/usr/local/lib/elasticsearch/plugins"
 __opendistroforelasticsearch_plugin_command: /usr/local/lib/elasticsearch/bin/elasticsearch-plugin
 __opendistroforelasticsearch_service: elasticsearch
-__opendistroforelasticsearch_jvm_options_dir: /usr/local/etc
 __opendistroforelasticsearch_java_home: /usr/local
