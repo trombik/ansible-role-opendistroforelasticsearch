@@ -1,0 +1,12 @@
+---
+__opendistroforelasticsearch_user: elasticsearch
+__opendistroforelasticsearch_group: elasticsearch
+__opendistroforelasticsearch_log_dir: /var/log/elasticsearch
+__opendistroforelasticsearch_db_dir: /var/lib/elasticsearch
+__opendistroforelasticsearch_package: opendistroforelasticsearch
+__opendistroforelasticsearch_conf_dir: /etc/elasticsearch
+__opendistroforelasticsearch_scripts_dir: ""
+__opendistroforelasticsearch_plugins_dir: /usr/share/elasticsearch/plugins
+__opendistroforelasticsearch_plugin_command: /usr/share/elasticsearch/bin/elasticsearch-plugin
+__opendistroforelasticsearch_service: elasticsearch
+__opendistroforelasticsearch_java_home: ""

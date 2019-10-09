@@ -114,7 +114,8 @@ when "redhat"
     it { should be_mode 644 }
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
-    its(:content) { should match(/^ES_JAVA_OPTS=\"#{ Regexp.escape("-XX:+UseCompressedOops") }\"$/) }
+    its(:content) { should match(/Managed by ansible/) }
+    its(:content) { should match(/MAX_OPEN_FILES=65535/) }
   end
 when "openbsd"
   describe file("/etc/elasticsearch/jvm.in") do
