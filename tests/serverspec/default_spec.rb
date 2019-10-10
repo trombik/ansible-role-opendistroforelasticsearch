@@ -25,6 +25,16 @@ es_plugin_command = "/usr/share/elasticsearch/bin/elasticsearch-plugin"
 es_plugins_directory = "/usr/share/elasticsearch/plugins"
 es_data_directory = "/var/lib/elasticsearch"
 es_log_directory  = "/var/log/elasticsearch"
+public_certs = [
+  "admin.pem",
+  "node.pem",
+  "root-ca.pem"
+]
+private_certs = [
+  "admin-key.pem",
+  "node-key.pem",
+  "root-ca-key.pem"
+]
 
 case os[:family]
 when "freebsd"
@@ -171,5 +181,27 @@ extra_files.each do |f|
     it { should be_grouped_into default_group }
     it { should be_mode 644 }
     its(:content) { should match(/Managed by ansible/) }
+  end
+end
+
+public_certs.each do |c|
+  describe file "#{es_config_path}/#{c}" do
+    it { should be_file }
+    it { should be_mode 444 }
+    it { should be_owned_by default_user }
+    it { should be_grouped_into default_group }
+    its(:content) { should match(/-----BEGIN CERTIFICATE-----/) }
+    its(:content) { should match(/-----END CERTIFICATE-----/) }
+  end
+end
+
+private_certs.each do |c|
+  describe file "#{es_config_path}/#{c}" do
+    it { should be_file }
+    it { should be_owned_by es_user_name }
+    it { should be_grouped_into es_user_group }
+    it { should be_mode 400 }
+    its(:content) { should match(/-----BEGIN (?:RSA )?PRIVATE KEY-----/) }
+    its(:content) { should match(/-----END (?:RSA )?PRIVATE KEY-----/) }
   end
 end
