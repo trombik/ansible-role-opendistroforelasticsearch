@@ -5,11 +5,11 @@ default_user    = "root"
 default_group   = "root"
 es_package_name = "opendistroforelasticsearch"
 es_service_name = "elasticsearch"
-es_config_path  = "/etc/elasticsearch"
+es_config_dir = "/etc/elasticsearch"
 es_user_name    = "elasticsearch"
 es_user_group   = "elasticsearch"
 java_home       = ""
-jvm_option      = "#{es_config_path}/jvm.options"
+jvm_option      = "#{es_config_dir}/jvm.options"
 plugins = [
   "opendistro_security"
 ]
@@ -40,7 +40,7 @@ case os[:family]
 when "freebsd"
   default_group = "wheel"
   es_package_name = "opendistroforelasticsearch"
-  es_config_path = "/usr/local/etc/elasticsearch"
+  es_config_dir = "/usr/local/etc/elasticsearch"
   es_plugin_command = "/usr/local/lib/elasticsearch/bin/elasticsearch-plugin"
   es_plugins_directory = "/usr/local/lib/elasticsearch/plugins"
   es_data_directory = "/var/db/elasticsearch"
@@ -55,6 +55,14 @@ when "openbsd"
   es_data_directory = "/var/elasticsearch"
 when "ubuntu"
   es_extra_packages = ["elasticsearch-oss"]
+end
+
+describe file es_config_dir do
+  it { should exist }
+  it { should be_directory }
+  it { should be_mode 700 }
+  it { should be_owned_by es_user_name }
+  it { should be_grouped_into es_user_group }
 end
 
 describe file(es_data_directory) do
@@ -143,7 +151,7 @@ end
   end
 end
 
-describe file("#{es_config_path}/elasticsearch.yml") do
+describe file("#{es_config_dir}/elasticsearch.yml") do
   it { should be_file }
   it { should be_owned_by es_user_name }
   it { should be_grouped_into es_user_group }
@@ -185,7 +193,7 @@ extra_files.each do |f|
 end
 
 public_certs.each do |c|
-  describe file "#{es_config_path}/#{c}" do
+  describe file "#{es_config_dir}/#{c}" do
     it { should be_file }
     it { should be_mode 444 }
     it { should be_owned_by default_user }
@@ -196,7 +204,7 @@ public_certs.each do |c|
 end
 
 private_certs.each do |c|
-  describe file "#{es_config_path}/#{c}" do
+  describe file "#{es_config_dir}/#{c}" do
     it { should be_file }
     it { should be_owned_by es_user_name }
     it { should be_grouped_into es_user_group }
