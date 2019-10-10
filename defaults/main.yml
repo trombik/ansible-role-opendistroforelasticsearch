@@ -18,3 +18,4 @@ opendistroforelasticsearch_config: ""
 opendistroforelasticsearch_http_port: 9200
 opendistroforelasticsearch_java_home: "{{ __opendistroforelasticsearch_java_home }}"
 opendistroforelasticsearch_extra_plugin_files: []
+opendistroforelasticsearch_include_role_x509_certificate: yes

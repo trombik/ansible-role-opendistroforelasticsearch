@@ -14,7 +14,7 @@
     freebsd_pkg_repo:
       local:
         enabled: "true"
-        url: http://192.168.43.75/packages/12_0-trombik/
+        url: http://192.168.1.105/packages/12_0-trombik/
         mirror_type: none
         priority: 100
         state: present
@@ -127,6 +127,28 @@
       http.cors.allow-methods: "OPTIONS, HEAD, GET, POST, PUT, DELETE"
       http.cors.allow-headers: "X-Requested-With, Content-Type, Content-Length"
       http.cors.allow-credentials: "true"
+      # _________________________TLS
+      opendistro_security.ssl.transport.pemcert_filepath: node.pem
+      opendistro_security.ssl.transport.pemkey_filepath: node-key.pem
+      opendistro_security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+      opendistro_security.ssl.transport.enforce_hostname_verification: false
+      opendistro_security.ssl.http.enabled: true
+      opendistro_security.ssl.http.pemcert_filepath: node.pem
+      opendistro_security.ssl.http.pemkey_filepath: node-key.pem
+      opendistro_security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+      opendistro_security.allow_default_init_securityindex: true
+      opendistro_security.authcz.admin_dn:
+        - CN=localhost,O=Internet Widgits Pty Ltd,ST=Some-State,C=AU
+      opendistro_security.nodes_dn:
+        - CN=localhost,O=Internet Widgits Pty Ltd,ST=Some-State,C=AU
+      opendistro_security.audit.type: internal_elasticsearch
+      opendistro_security.enable_snapshot_restore_privilege: true
+      opendistro_security.check_snapshot_restore_write_privileges: true
+      opendistro_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+      cluster.routing.allocation.disk.threshold_enabled: false
+      node.max_local_storage_nodes: 3
+      opendistro_security.audit.config.disabled_rest_categories: NONE
+      opendistro_security.audit.config.disabled_transport_categories: NONE
     opendistroforelasticsearch_plugins:
       - name: opendistro_security
         src: https://d3g5vo6xdbdb9a.cloudfront.net/downloads/elasticsearch-plugins/opendistro-security/opendistro_security-1.2.0.0.zip
@@ -171,3 +193,178 @@
           http_authenticator:
             type: basic
             challenge: true
+    x509_certificate_debug_log: yes
+    x509_certificate:
+      - name: node
+        state: present
+        public:
+          path: "{{ opendistroforelasticsearch_conf_dir }}/node.pem"
+          key: |
+            -----BEGIN CERTIFICATE-----
+            MIIDMzCCAhsCCQDFJMQePWLjHzANBgkqhkiG9w0BAQsFADBeMQswCQYDVQQGEwJB
+            VTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0
+            cyBQdHkgTHRkMRcwFQYDVQQDDA5jYS5leG1hcGxlLm9yZzAeFw0xOTEwMTAwMjMx
+            MThaFw0xOTExMDkwMjMxMThaMFkxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21l
+            LVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxEjAQBgNV
+            BAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKbc
+            g+Wu9h+zSQDcY59exw2SYcoKCyjjICxU7dyV2UWDuwHMrp0hPKE6Ihd41ftgWVOl
+            fIra3I0gmGteWztlaEP3wx0tnZdopBJgMegiPjmUcz/w3wqtzgSqH3fTKbQhO4qL
+            jDnwJfOxpoUWdR69DXPFLTi5HrD1/GwmT3ra6ySJGVRKKGnl9ZukwnEqQs58e/+T
+            GCwnGOjkItwE5kxEtPSNRqsm+zfJyy6hwoeCGHyqxwiRTwSNjRdL+rQjGzGPj/OU
+            VDDuXV389+EmKYbTfH790VRULNsT22VjFCwW1yAsmJTFKVktjcGjdcH2iGtLN7CO
+            QVLNR9QIl+x2+9XXSxUCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAnZEGtf28tpzy
+            36hGJJxLHqewb7xRnoXnm5d5f3x1vTlmtU/Y3NZg4eqV8fBJr6Z9IpgAe4Mzmzna
+            4j4jcUHraKrat/UKxiCqqP+P3FggRhUz5c4aC/pCOF3MRzD4Q9hZHV3gLoZMzerv
+            eza1HuWnaRg2hAIBOlb9Oyn7K4LgMdH3Un4L2tH3eyp0KsMQj/JAW0iZFtVuohzu
+            R7jSBWvYE3+siM2mpHUw6sf5uevgPTyEZg3ionLsGg0M6XdpvgT61m/pE3+7xjQ1
+            I9Eg8TdwRq5gAv0Ywl5BuXyIA40x7x87y4qPpqMpBsc8u7ESlffUs2mor0qfQvm7
+            mzd3/gNRFw==
+            -----END CERTIFICATE-----
+        secret:
+          path: "{{ opendistroforelasticsearch_conf_dir }}/node-key.pem"
+          owner: "{{ opendistroforelasticsearch_user }}"
+          group: "{{ opendistroforelasticsearch_group }}"
+          key: |
+            -----BEGIN PRIVATE KEY-----
+            MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCm3IPlrvYfs0kA
+            3GOfXscNkmHKCgso4yAsVO3cldlFg7sBzK6dITyhOiIXeNX7YFlTpXyK2tyNIJhr
+            Xls7ZWhD98MdLZ2XaKQSYDHoIj45lHM/8N8Krc4Eqh930ym0ITuKi4w58CXzsaaF
+            FnUevQ1zxS04uR6w9fxsJk962uskiRlUSihp5fWbpMJxKkLOfHv/kxgsJxjo5CLc
+            BOZMRLT0jUarJvs3ycsuocKHghh8qscIkU8EjY0XS/q0Ixsxj4/zlFQw7l1d/Pfh
+            JimG03x+/dFUVCzbE9tlYxQsFtcgLJiUxSlZLY3Bo3XB9ohrSzewjkFSzUfUCJfs
+            dvvV10sVAgMBAAECggEAHG83isxl5MEIj7z+vQnJoeZwA53yiOUrdmKCpjRi8hWg
+            qI3Ys64WRuNBK/7LeCrTDg4FSyRAsUv8rU9G/LgrLGnsNeywDj0muHrsBkLPl8BU
+            Y3EIkSlNEj5rXl/9m1SOcO2W18i0rvJ3Dfblvnc486GGM0RYlo9UlJlysdzcdT0h
+            ORjgSzREH2J6S6PB5T/waxZ6XGopy3qkF2Q+Bs7K+Rx1uIrztsPMfJ5YcdPTNEiD
+            YDNwWCI5FGI1Wq/5YtpkYlkZx/z+CcAX5njoQKyyZdOJVzUwVRxdEtOPALOYnB8x
+            pUmxugKbE8d2pAYbV513dG6r+BXGyA4QptvyGxWXgQKBgQDVqYL1u+DrbSDYCBjd
+            s379CD64+vtBe6Yfq6QDQS9XGAtTyYcAj+9oUzTew63vOlgfSZ/xVKcOq4Re88mn
+            +KIkl1DA7+O/l8os38lrzDgbZO8vLE+VFpS+TbUegkOFRFpldActyLV6JuyfO58D
+            PsDO+xxtw4lneIlCIM9MOiqXbwKBgQDH7O456+XhYy2BMV1fB+BkTnX9M0SjlXwB
+            Tv7WUfEEMLFJsHae7P+4q396gBAx4CD3gBH+zBULeRdW3wkJKc22QS5kSJaU0T59
+            1bL1n7hIeIu36m+Due+o2PLeda+Hx3hk56JQkXhTpDEZAx2WGOZ81lATOKtUTdDs
+            bAISGyGjuwKBgDb2m0zRnwORGCDavGLT2PgIlfIKBnaK82o0QkXgD+iMs+VC82qu
+            nDyvIuunVOg0jxTFYNK5HxyD/NJcTmTabgORtWFclK7lwkmW6/7CEzDg3zK4aGSG
+            4Y6u+Me3ZN00fziYB3y8pAqfVsGDmd1A2GKmcGLAKWmntU+AlzMZx3kbAoGBAIui
+            Sry/qv4hc+3Q2aL+8FV+i1/+B8mtJUAQuWJdNtWzYI/UJPVZGD4V4eJgQW9kWAIl
+            O+xXA7fQqmFtQ3VX8iqCGfHG1Q05m8jtkaGGHYLYVtVscthw7Bdk9zQyxBc0VT08
+            nxxgjcb1XalXiLmFyK2WTbUvFlK6StplkYit1G/zAoGAYdYiIZmixKsrtdH/CKQY
+            kGBqJY9H+3QQB9fckHROtdOalWrJJCUBF+jEa2e6rLbFSpzj2Dpot2QLiENBMZuH
+            6DAksJ9+B3lxbQxdssFaFa5NocS2v6oAyLbEGNIOEkQ54f0v5HfaPVeLElK4Hs18
+            f5MIWEE6V+z+aNg7aXdrLtU=
+            -----END PRIVATE KEY-----
+      - name: root-ca
+        state: present
+        public:
+          path: "{{ opendistroforelasticsearch_conf_dir }}/root-ca.pem"
+          key: |
+            -----BEGIN CERTIFICATE-----
+            MIIDMzCCAhsCCQDFJMQePWLjHzANBgkqhkiG9w0BAQsFADBeMQswCQYDVQQGEwJB
+            VTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0
+            cyBQdHkgTHRkMRcwFQYDVQQDDA5jYS5leG1hcGxlLm9yZzAeFw0xOTEwMTAwMjMx
+            MThaFw0xOTExMDkwMjMxMThaMFkxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21l
+            LVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxEjAQBgNV
+            BAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKbc
+            g+Wu9h+zSQDcY59exw2SYcoKCyjjICxU7dyV2UWDuwHMrp0hPKE6Ihd41ftgWVOl
+            fIra3I0gmGteWztlaEP3wx0tnZdopBJgMegiPjmUcz/w3wqtzgSqH3fTKbQhO4qL
+            jDnwJfOxpoUWdR69DXPFLTi5HrD1/GwmT3ra6ySJGVRKKGnl9ZukwnEqQs58e/+T
+            GCwnGOjkItwE5kxEtPSNRqsm+zfJyy6hwoeCGHyqxwiRTwSNjRdL+rQjGzGPj/OU
+            VDDuXV389+EmKYbTfH790VRULNsT22VjFCwW1yAsmJTFKVktjcGjdcH2iGtLN7CO
+            QVLNR9QIl+x2+9XXSxUCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAnZEGtf28tpzy
+            36hGJJxLHqewb7xRnoXnm5d5f3x1vTlmtU/Y3NZg4eqV8fBJr6Z9IpgAe4Mzmzna
+            4j4jcUHraKrat/UKxiCqqP+P3FggRhUz5c4aC/pCOF3MRzD4Q9hZHV3gLoZMzerv
+            eza1HuWnaRg2hAIBOlb9Oyn7K4LgMdH3Un4L2tH3eyp0KsMQj/JAW0iZFtVuohzu
+            R7jSBWvYE3+siM2mpHUw6sf5uevgPTyEZg3ionLsGg0M6XdpvgT61m/pE3+7xjQ1
+            I9Eg8TdwRq5gAv0Ywl5BuXyIA40x7x87y4qPpqMpBsc8u7ESlffUs2mor0qfQvm7
+            mzd3/gNRFw==
+            -----END CERTIFICATE-----
+        secret:
+          path: "{{ opendistroforelasticsearch_conf_dir }}/root-ca-key.pem"
+          owner: "{{ opendistroforelasticsearch_user }}"
+          group: "{{ opendistroforelasticsearch_group }}"
+          key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEA2vu3zNFLi5s3afKZsjj4WYTqOyQeu7ajCSOVFWu3/rGUQCxY
+            whaN8sZWJ4Tb3giSgFt9daxIAjFT0RNZm9HI9+hthlyQ6EmVtmHv8QOIjWTrIT1S
+            9pZuyHsWcnin2FMX/UM1VxJSZQ3lsKhzbqBlGqmRuWbYi4hqsRxAnDuU78frvqDC
+            gzFgjIEnDZMJeooM+ZLUrXuIIPi+auEl/7n8u3C/anLtt+K5UMCvZrCUSwSycPx2
+            qFdPGpDXedlsfkxzW+mk3s38dHOG/5+qxwZiIexTgRYBRmoASZe5ksSVxKjvEWfF
+            Zv1WoOMivEDwXmgbxojXc1hWfKAT6ArgitTyrQIDAQABAoIBAQDQjgtutaYNP7Z2
+            4OYgJsHgAAZUbQIYJMkBWzIRRJXnq5hVxeaCcpieLua+nHoJ7IAaXwgNmha6f+Aj
+            rxoYnKOZ93LYFDCuCebb3Ep4b7UNdJ+6+Hya/IplxVSLkP3JuNmQCwIx+vEd7S5k
+            IQpOwdOIoRZ4TMrPmQyDwTSHlvcxpKJxVZ0XGSAg9jzqhFpmbn28/GUr8iQD2Mo0
+            U9N6ToddHyDpll0eJouoXesIbvxwyFI0vdHki5fl6LmazKzKjGtr8yD8QqP5D403
+            JdzSNqwElQd7QKpvMPaL1dXpdUUiF+9TUXjt8A1MBtVsSmXMwMiqOfuzPjAj7wkc
+            smfTxjABAoGBAPJ8wjWzZV1QDxzYRYMRCuVSuJrLn4jA8jEEf3X5ej3SMyaVaBOJ
+            YtSuoV4C66jtgHRiQTcUIewiZAurmemeR/VRsW2RPC/w2SYZRytKKm8l5YM2iXSK
+            /VgWTdVSbOhzJYfV0Azp47pY2yW3WZop3lnzcXPM/jthI6NnX4KcdI9BAoGBAOcv
+            qIw8DSXYJUStIJ4wf5jfP2jmjeepA0d007XfZCkLE3ltlrxN2llAf/fq+sbhEtTf
+            vpFnEcRqSvw4y8jd0G2IrvFZoSdr1SbtF6UfdixcB9Br2kqElNxzSX2eNHFOxOPw
+            L+snKT+i1pFAXCOlMBedqZNetyWqBnWSvARUKvRtAoGAQoLl4kTqsMWc35SSvHiY
+            PH6MFCl2ANSrmbZaH8nmNb7KOPMSMQmmCiA8MsUqTpOWgFXS/YCQLWzhdDIFbYb0
+            xd06hYsorx2o8kJMuxsEuKf0ZCE5YrYc92RmxPRu2vN6f9+tyVz+Ecb9lULNWPPT
+            AWk83T6FHVRvqgpYsEKp1gECgYBZ6R8T6wbyAO39l5dn7lSxj6GJmqD1x7WOxNDR
+            mt/JVpVsVEKbWWvh6kPal3iQgFhikeH7iqpOSUiAb1ZR+HJnJxFirAkQ2886JFtd
+            zK6Y8fHYDRoIgSej1PJv+GdM6eWJAJCiU8inBx2LwAwVkNjzVk3tEpkH/OgmMbsN
+            s+5AwQKBgDXibuSSsisvdIN9hsSdCm2TBAx2yiVS/Jm64lVjr+PJpswTG0OY9YLO
+            vN7YiVwEifmpgjwYqwbygU47h3OH22fn+A04geI5XPQJytWOgVfzh2oBWoHcFApi
+            zrAM2P/g2Lnw/ttxnFUHpLe+f2uq+PTgidDl58R2tbt8kTO5QpGG
+            -----END RSA PRIVATE KEY-----
+      - name: admin
+        state: present
+        public:
+          path: "{{ opendistroforelasticsearch_conf_dir }}/admin.pem"
+          key: |
+            -----BEGIN CERTIFICATE-----
+            MIIDMzCCAhsCCQDFJMQePWLjHjANBgkqhkiG9w0BAQsFADBeMQswCQYDVQQGEwJB
+            VTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0
+            cyBQdHkgTHRkMRcwFQYDVQQDDA5jYS5leG1hcGxlLm9yZzAeFw0xOTEwMTAwMjI2
+            MDlaFw0xOTExMDkwMjI2MDlaMFkxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21l
+            LVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxEjAQBgNV
+            BAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMsB
+            G8zk8zYLb7KswWprNaAVBnGyNkbBa3eWH3NjsP6TIiSQWii80aSPk4OxI2juLvqX
+            BACS3sqAd0qW1HUuFfYqOMW4zCPyxPiBBY+3qZP3VlmDWhVZeRnH9RuEuvp24+TX
+            uRv8efri2I3BbKlRObaGwYuwz/S7mCZJX+QkLgOwnkZtjkkoMHQ80UF1C98iroUB
+            qASfVOYtNSWZXj3WsR07qI8Juas2ebenMeRMizZIq2M/APJbawZhw1THOUJpL4Jx
+            sPr/cJkL3n5HU3S7KLaeePItxmWC1oYq452CDytGFAQoL1U8J2JpJ4XJrqPhiEec
+            3JvWD53p8ViSjoNVXkECAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAUfCvEv7D9j+7
+            heOYop/OsY6hFHaPIaeYeHnDkZUGcS+9THjYjoZwML0HzsNbunmE9xw6nj6Fp9lh
+            Zz+ds93JU4uthIcR5FJrvGJr3cCgkx0CyTMaVMZ3aUYszuWWv/ztF0KbeX5g0OmY
+            MDhfH0QLh7crp4vymPuxgzECiyTizuOfb41FaIx32ks3fEUNe6DhGPyjeXjB8AEW
+            noZYNT2Iys06qjpIiPa3yKrk38wALRsnY5eJw844YOmTZodlx+rrjCqkwzsPAO52
+            quywFajsDuy+FwnxJSibPCgbRqJfOYmCKsWJrPc9LyvEEy9l+1yxFNp2z1Zy7iUe
+            qcmtZpbkfg==
+            -----END CERTIFICATE-----
+        secret:
+          path: "{{ opendistroforelasticsearch_conf_dir }}/admin-key.pem"
+          owner: "{{ opendistroforelasticsearch_user }}"
+          group: "{{ opendistroforelasticsearch_group }}"
+          key: |
+            -----BEGIN PRIVATE KEY-----
+            MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDLARvM5PM2C2+y
+            rMFqazWgFQZxsjZGwWt3lh9zY7D+kyIkkFoovNGkj5ODsSNo7i76lwQAkt7KgHdK
+            ltR1LhX2KjjFuMwj8sT4gQWPt6mT91ZZg1oVWXkZx/UbhLr6duPk17kb/Hn64tiN
+            wWypUTm2hsGLsM/0u5gmSV/kJC4DsJ5GbY5JKDB0PNFBdQvfIq6FAagEn1TmLTUl
+            mV491rEdO6iPCbmrNnm3pzHkTIs2SKtjPwDyW2sGYcNUxzlCaS+CcbD6/3CZC95+
+            R1N0uyi2nnjyLcZlgtaGKuOdgg8rRhQEKC9VPCdiaSeFya6j4YhHnNyb1g+d6fFY
+            ko6DVV5BAgMBAAECggEAJYuh8aZSmSdKVFiBOUZ015Or6nFUeoehca+xR20juiHK
+            Scrs8eXiPDZVySCE9Q5AYBZ4JgcD754M8h2tU7LfWvT6JQ+Fqgxng7KRLcCBO52e
+            OdYCXjp7HFqQKbPFxTch9Rw030k14kH8XVNt3m7oZqrLtyNPgusDO+mMM6zBWesG
+            yhEtrzXFF+mskOLl7xp/0n/WDO7hsz3PZkEx/hGyNpxHikE+or13lRtSogeZEybv
+            4Y1hhKcZwsVQOtsoSG7fcBwk4F0hJlesOO1M9UPCE8kUjs97oJfLQukuWqap+T4r
+            USECJsVwcsjsruqhr+UQmvDp22PqRGRh6kuZbZwh5QKBgQD8GuWOMAC8R19DPgc3
+            ggfQz97uYwBb2cw/xwCCHVjhF/WQfgPg7g7MNsVr256imZuzsjQIQJEX8tmBgdb1
+            p9Ebs8C+L8xeIfsi7GqlPOaHm80q8sF1SpeQZ36+23SthHN1JT6pLMl8D8WscBZo
+            Kt5NlzpcNCtQ8aqqV/FXyPPp3wKBgQDOJANZPTfWOQO68hm7Zj2sihQTvFb1yxBU
+            F89ol8kvajKYw0Mef/IsTEtRS08pE6AVWvjJC9Wi5JSBxdtaGxDje/4fXj1Ili3u
+            I/DKIJVCz9uq4y8vaqO4npw7/nTGCeqfZHh19pzMuwHxPEfSvjqzr/5fyecSYzL/
+            +0EZz1H73wKBgA89qQcRi9nWDsJH67PFXqeXCYkr3weugRSR+Uvkbk0dX7EejSl5
+            +tcJsKG2oz59PtZ8PX0KOjtSaSfVK6OqQ5ADK/HTfe1q7H3OARyANAeauaqRBnUK
+            z2Lhft4W8lTTHw/D8qfTl1KyuWaVWCVwAgR60gJk/QFlusWVj3eZJHXNAoGAHFiv
+            bTIR349vh+GK0E465OMH577aZmpKEIZFqyhULgT4eDFBpYwKjTTglok4lXlxZf5g
+            f6T097VfBolipH1cUSvXwhB/dN/R6RFgJytb2xgiKNmcv3R2lwiYi1duT11Fui1i
+            szX6UdzVY4rahYxLHjJxVFK7R7gEZ1bxmM79gxkCgYBfeU0SNr9oUL8Rw7pf1pe6
+            H5f1zyPDIKWhzU6aaIdGKr5wUIcQT0/Z75O/JBxXeq3bBkH/eZU/giUE33kpVPsv
+            fx/baNmdyVXvHEn9dQd7i/0LUXF1QgJoreYDz9QV4gYzDOtyWiA/XR+snNsTBH7R
+            0YX6LjQg646+IyFoK6qw+w==
+            -----END PRIVATE KEY-----

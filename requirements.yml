@@ -4,3 +4,4 @@
 - name: trombik.freebsd_pkg_repo
 - name: trombik.apt_repo
 - name: trombik.redhat_repo
+- name: trombik.x509_certificate

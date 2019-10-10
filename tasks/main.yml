@@ -7,6 +7,11 @@
 - name: "Include install-{{ ansible_os_family }}.yml"
   include: "install-{{ ansible_os_family }}.yml"
 
+- name: Include trombik.x509_certificate if opendistroforelasticsearch_include_role_x509_certificate is true
+  include_role:
+    name: trombik.x509_certificate
+  when: opendistroforelasticsearch_include_role_x509_certificate
+
 - name: Create data directory
   file:
     path: "{{ opendistroforelasticsearch_db_dir }}"
