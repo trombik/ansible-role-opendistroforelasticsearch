@@ -16,4 +16,5 @@
     dest: /etc/default/elasticsearch
     owner: root
     group: root
+    validate: sh -n %s
     mode: 0644
