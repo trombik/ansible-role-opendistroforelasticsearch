@@ -1,3 +1,7 @@
+## Release 1.1.1
+
+* 183cdf0 bugfix: update directory permission
+
 ## Release 1.1.0
 
 * 6096b28 doc: update README
