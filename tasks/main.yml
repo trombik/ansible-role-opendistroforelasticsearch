@@ -18,7 +18,7 @@
     state: directory
     owner: "{{ opendistroforelasticsearch_user }}"
     group: "{{ opendistroforelasticsearch_group }}"
-    mode: 0750
+    mode: 0755
 
 - name: Create opendistroforelasticsearch_log_dir directory
   file:
@@ -41,7 +41,8 @@
     path: "{{ opendistroforelasticsearch_conf_dir }}"
     # XXX OpenDistroSecurityPlugin insists it should be 0700
     # [c.a.o.s.OpenDistroSecurityPlugin] [testnode] Directory /etc/elasticsearch has insecure file permissions (should be 0700)
-    mode: 0700
+    # XXX opendistro_security 1.3.0.0 does not.
+    mode: 0755
     owner: "{{ opendistroforelasticsearch_user }}"
     group: "{{ opendistroforelasticsearch_group }}"
     state: directory

@@ -60,7 +60,7 @@ end
 describe file es_config_dir do
   it { should exist }
   it { should be_directory }
-  it { should be_mode 700 }
+  it { should be_mode 755 }
   it { should be_owned_by es_user_name }
   it { should be_grouped_into es_user_group }
 end
@@ -69,7 +69,7 @@ describe file(es_data_directory) do
   it { should be_directory }
   it { should be_owned_by es_user_name }
   it { should be_grouped_into es_user_group }
-  it { should be_mode 750 }
+  it { should be_mode 755 }
 end
 
 describe file(es_log_directory) do
@@ -208,7 +208,7 @@ private_certs.each do |c|
     it { should be_file }
     it { should be_owned_by es_user_name }
     it { should be_grouped_into es_user_group }
-    it { should be_mode 400 }
+    it { should be_mode c == "node-key.pem" ? 600 : 400 }
     its(:content) { should match(/-----BEGIN (?:RSA )?PRIVATE KEY-----/) }
     its(:content) { should match(/-----END (?:RSA )?PRIVATE KEY-----/) }
   end
