@@ -109,7 +109,7 @@ None
     freebsd_pkg_repo:
       local:
         enabled: "true"
-        url: http://192.168.1.105/packages/12_0-trombik/
+        url: http://10.1.5.123/packages/120amd64-trombik/
         mirror_type: none
         priority: 100
         state: present
@@ -135,11 +135,9 @@ None
     os_opendistroforelasticsearch_extra_packages:
       FreeBSD: []
       Debian:
-        # XXX install 7.2.0 becasue the current opendistroforelasticsearch
-        # depends on 7.2.0, but the latest elasticsearch-oss is 7.4.0
-        #
-        # opendistroforelasticsearch : Depends: elasticsearch-oss (= 7.2.0) but 7.4.0 is to be installed
-        - elasticsearch-oss=7.2.0
+        # XXX install 7.3.2 becasue the current opendistroforelasticsearch
+        # depends on 7.3.2, but the latest elasticsearch-oss is 7.5.1
+        - elasticsearch-oss=7.3.2
       RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
     os_java_packages:
@@ -244,9 +242,14 @@ None
       node.max_local_storage_nodes: 3
       opendistro_security.audit.config.disabled_rest_categories: NONE
       opendistro_security.audit.config.disabled_transport_categories: NONE
+    project_opendistro_plugin_base_url: https://d3g5vo6xdbdb9a.cloudfront.net/downloads/elasticsearch-plugins
+
+    # XXX see version matrix athttps://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/
     opendistroforelasticsearch_plugins:
       - name: opendistro_security
-        src: https://d3g5vo6xdbdb9a.cloudfront.net/downloads/elasticsearch-plugins/opendistro-security/opendistro_security-1.2.0.0.zip
+        src: "{{ project_opendistro_plugin_base_url }}/opendistro-security/opendistro_security-1.3.0.0.zip"
+      - name: opendistro_alerting
+        src: "{{ project_opendistro_plugin_base_url }}/opendistro-alerting/opendistro_alerting-1.3.0.1.zip"
     opendistroforelasticsearch_extra_plugin_files:
       - path: opendistro_security/securityconfig/roles.yml
         type: yaml
@@ -317,6 +320,7 @@ None
         state: present
         public:
           path: "{{ opendistroforelasticsearch_conf_dir }}/node.pem"
+          mode: "0444"
           key: |
             -----BEGIN CERTIFICATE-----
             MIIDMzCCAhsCCQDFJMQePWLjHzANBgkqhkiG9w0BAQsFADBeMQswCQYDVQQGEwJB
@@ -342,6 +346,7 @@ None
           path: "{{ opendistroforelasticsearch_conf_dir }}/node-key.pem"
           owner: "{{ opendistroforelasticsearch_user }}"
           group: "{{ opendistroforelasticsearch_group }}"
+          mode: "0600"
           key: |
             -----BEGIN PRIVATE KEY-----
             MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCm3IPlrvYfs0kA
