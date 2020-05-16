@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "socket"
 # @return [String] public IP address of workstation used for egress traffic
 def local_ip
@@ -36,7 +38,7 @@ rescue SocketError, Errno::ECONNREFUSED,
 rescue Errno::EPERM, Errno::ETIMEDOUT
   false
 ensure
-  socket && socket.close
+  socket&.close
 end
 http_proxy = proxy_running? ? http_proxy_url : ""
 
