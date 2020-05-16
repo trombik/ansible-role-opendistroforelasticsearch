@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "pathname"
 
 root_dir = Pathname.new(__FILE__).dirname

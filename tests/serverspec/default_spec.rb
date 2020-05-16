@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 require "serverspec"
 
@@ -6,10 +8,10 @@ default_group   = "root"
 es_package_name = "opendistroforelasticsearch"
 es_service_name = "elasticsearch"
 es_config_dir = "/etc/elasticsearch"
-es_user_name    = "elasticsearch"
-es_user_group   = "elasticsearch"
-java_home       = ""
-jvm_option      = "#{es_config_dir}/jvm.options"
+es_user_name = "elasticsearch"
+es_user_group = "elasticsearch"
+java_home = ""
+jvm_option = "#{es_config_dir}/jvm.options"
 plugins = [
   "opendistro_security"
 ]
@@ -141,7 +143,7 @@ when "openbsd"
     it { should be_mode 644 }
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
-    its(:content) { should match(/JAVA_OPTS=\"#{ Regexp.escape("-XX:+UseCompressedOops") }\"$/) }
+    its(:content) { should match(/JAVA_OPTS=\"#{Regexp.escape("-XX:+UseCompressedOops")}\"$/) }
   end
 end
 
