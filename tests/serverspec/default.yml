@@ -14,7 +14,7 @@
     freebsd_pkg_repo:
       local:
         enabled: "true"
-        url: http://192.168.1.105/packages/120amd64-trombik/
+        url: http://pkg.i.trombik.org/121amd64-default-default
         mirror_type: none
         priority: 100
         state: present
@@ -40,9 +40,10 @@
     os_opendistroforelasticsearch_extra_packages:
       FreeBSD: []
       Debian:
-        # XXX install 7.3.2 becasue the current opendistroforelasticsearch
-        # depends on 7.3.2, but the latest elasticsearch-oss is 7.5.1
-        - elasticsearch-oss=7.3.2
+        # XXX install 7.6.1 becasue the current opendistroforelasticsearch
+        # depends on 7.6.1, but the latest elasticsearch-oss is not 7.6.1
+        - elasticsearch-oss=7.6.1
+        - unzip
       RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
     os_java_packages:
