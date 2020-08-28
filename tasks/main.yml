@@ -33,6 +33,7 @@
   file:
     path: "{{ opendistroforelasticsearch_scripts_dir }}"
     state: directory
+    mode: 0755
   when:
     - opendistroforelasticsearch_scripts_dir | length > 0
 
@@ -79,6 +80,7 @@
     path: "{{ opendistroforelasticsearch_plugins_dir }}"
     # owner: "{{ opendistroforelasticsearch_user }}"
     # group: "{{ opendistroforelasticsearch_group }}"
+    mode: 0755
     state: directory
 
 - name: Install plugins
@@ -94,6 +96,7 @@
   file:
     path: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path | dirname }}"
     state: directory
+    mode: 0755
   with_items: "{{ opendistroforelasticsearch_extra_plugin_files }}"
   when:
     - "(not 'state' in item) or (item['state'] == 'present')"
@@ -113,6 +116,7 @@
   file:
     path: "{{ opendistroforelasticsearch_plugins_dir }}/{{ item.path }}"
     state: absent
+    mode: 0755
   with_items: "{{ opendistroforelasticsearch_extra_plugin_files }}"
   when:
     - "'state' in item"
