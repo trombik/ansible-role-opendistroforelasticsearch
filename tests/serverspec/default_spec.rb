@@ -188,8 +188,8 @@ extra_files.each do |f|
   describe file "#{es_plugins_directory}/#{f}" do
     it { should be_file }
     it { should be_owned_by default_user }
-    it { should be_grouped_into default_group }
-    it { should be_mode 644 }
+    it { should be_grouped_into es_user_group }
+    it { should be_mode 640 }
     its(:content) { should match(/Managed by ansible/) }
   end
 end

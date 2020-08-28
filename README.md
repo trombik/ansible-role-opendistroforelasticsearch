@@ -109,7 +109,7 @@ None
     freebsd_pkg_repo:
       local:
         enabled: "true"
-        url: http://192.168.1.105/packages/120amd64-trombik/
+        url: http://pkg.i.trombik.org/121amd64-default-default
         mirror_type: none
         priority: 100
         state: present
@@ -135,9 +135,11 @@ None
     os_opendistroforelasticsearch_extra_packages:
       FreeBSD: []
       Debian:
-        # XXX install 7.3.2 becasue the current opendistroforelasticsearch
-        # depends on 7.3.2, but the latest elasticsearch-oss is 7.5.1
-        - elasticsearch-oss=7.3.2
+        # XXX install 7.8.0 becasue the current opendistroforelasticsearch
+        # depends on 7.8.0, but the latest elasticsearch-oss is not the
+        # version.
+        - elasticsearch-oss=7.8.0
+        - unzip
       RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
     os_java_packages:
@@ -244,7 +246,7 @@ None
       opendistro_security.audit.config.disabled_transport_categories: NONE
     project_opendistro_plugin_base_url: https://d3g5vo6xdbdb9a.cloudfront.net/downloads/elasticsearch-plugins
 
-    # XXX see version matrix athttps://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/
+    # XXX see version matrix at https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/
     opendistroforelasticsearch_plugins:
       - name: opendistro_security
         src: "{{ project_opendistro_plugin_base_url }}/opendistro-security/opendistro_security-1.3.0.0.zip"
@@ -253,18 +255,24 @@ None
     opendistroforelasticsearch_extra_plugin_files:
       - path: opendistro_security/securityconfig/roles.yml
         type: yaml
+        mode: "0640"
+        group: "{{ opendistroforelasticsearch_user }}"
         content:
           _meta:
             type: roles
             config_version: 2
       - path: opendistro_security/securityconfig/roles_mapping.yml
         type: yaml
+        mode: "0640"
+        group: "{{ opendistroforelasticsearch_user }}"
         content:
           _meta:
             type: rolesmapping
             config_version: 2
       - path: opendistro_security/securityconfig/internal_users.yml
         type: yaml
+        mode: "0640"
+        group: "{{ opendistroforelasticsearch_user }}"
         content:
           _meta:
             type: "internalusers"
@@ -287,12 +295,14 @@ None
             description: "Demo admin user"
       - path: opendistro_security/securityconfig/config.yml
         type: yaml
+        mode: "0640"
+        group: "{{ opendistroforelasticsearch_user }}"
         content:
           http_authenticator:
             type: basic
             challenge: true
     x509_certificate_debug_log: yes
-    # XXX these keys were create by following the steps described at:
+    # XXX these keys were create by the following steps described at:
     # https://opendistro.github.io/for-elasticsearch-docs/docs/security-configuration/generate-certificates/
     #
     # here is the copy of the steps:
