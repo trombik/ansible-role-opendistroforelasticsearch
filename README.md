@@ -2,41 +2,71 @@
 
 `ansible` role to manage `opendistroforelasticsearch`.
 
+## for all users
+
+The role assumes the service is listening on `localhost`.
+
 ## for FreeBSD users
 
 `textproc/opendistroforelasticsearch` is not currently available in the
 official ports tree. A WIP port is available at
-[trombik/opendistroforelasticsearch](https://github.com/trombik/opendistroforelasticsearch).
+[trombik/freebsd-ports-opendistroforelasticsearch](https://github.com/trombik/freebsd-ports-opendistroforelasticsearch).
 The package must be available for installation at somewhere, i.e. in YOUR
 package tree.
 
 # Requirements
 
-None
+By default, the role uses `trombik.x509_certificate` to manage X509
+certificates. The role does not list `trombik.x509_certificate` as a
+dependency because TLS is not mandatory.
 
 # Role Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `opendistroforelasticsearch_user` | | `{{ __opendistroforelasticsearch_user }}` |
-| `opendistroforelasticsearch_group` | | `{{ __opendistroforelasticsearch_group }}` |
-| `opendistroforelasticsearch_log_dir` | | `{{ __opendistroforelasticsearch_log_dir }}` |
-| `opendistroforelasticsearch_db_dir` | | `{{ __opendistroforelasticsearch_db_dir }}` |
-| `opendistroforelasticsearch_scripts_dir` | | `{{ __opendistroforelasticsearch_scripts_dir }}` |
-| `opendistroforelasticsearch_plugins_dir` | | `{{ __opendistroforelasticsearch_plugins_dir }}` |
-| `opendistroforelasticsearch_plugin_command` | | `{{ __opendistroforelasticsearch_plugin_command }}` |
-| `opendistroforelasticsearch_plugins` | | `[]` |
-| `opendistroforelasticsearch_service` | | `{{ __opendistroforelasticsearch_service }}` |
-| `opendistroforelasticsearch_package` | | `{{ __opendistroforelasticsearch_package }}` |
-| `opendistroforelasticsearch_conf_dir` | | `{{ __opendistroforelasticsearch_conf_dir }}` |
-| `opendistroforelasticsearch_jvm_options` | | `""` |
-| `opendistroforelasticsearch_conf_file` | | `{{ opendistroforelasticsearch_conf_dir }}/elasticsearch.yml` |
-| `opendistroforelasticsearch_flags` | | `""` |
-| `opendistroforelasticsearch_config` | | `""` |
-| `opendistroforelasticsearch_http_port` | | `9200` |
-| `opendistroforelasticsearch_java_home` | | `{{ __opendistroforelasticsearch_java_home }}` |
-| `opendistroforelasticsearch_extra_plugin_files` | | `[]` |
-| `opendistroforelasticsearch_include_role_x509_certificate` | | `yes` |
+| `opendistroforelasticsearch_user` | user name of `opendistroforelasticsearch` | `{{ __opendistroforelasticsearch_user }}` |
+| `opendistroforelasticsearch_group` | group name of `opendistroforelasticsearch` | `{{ __opendistroforelasticsearch_group }}` |
+| `opendistroforelasticsearch_log_dir` | path to log directory | `{{ __opendistroforelasticsearch_log_dir }}` |
+| `opendistroforelasticsearch_db_dir` | path to data directory | `{{ __opendistroforelasticsearch_db_dir }}` |
+| `opendistroforelasticsearch_scripts_dir` | path to script directory | `{{ __opendistroforelasticsearch_scripts_dir }}` |
+| `opendistroforelasticsearch_plugins_dir` | path to plug-in directory | `{{ __opendistroforelasticsearch_plugins_dir }}` |
+| `opendistroforelasticsearch_plugin_command` | path to `elasticsearch-plugin` command | `{{ __opendistroforelasticsearch_plugin_command }}` |
+| `opendistroforelasticsearch_plugins` | a list of plugins (see below) | `[]` |
+| `opendistroforelasticsearch_service` | service name of `opendistroforelasticsearch` | `{{ __opendistroforelasticsearch_service }}` |
+| `opendistroforelasticsearch_package` | package name of `opendistroforelasticsearch` | `{{ __opendistroforelasticsearch_package }}` |
+| `opendistroforelasticsearch_conf_dir` | path to configuration directory | `{{ __opendistroforelasticsearch_conf_dir }}` |
+| `opendistroforelasticsearch_jvm_options` | JVM options (see the example playbook) | `""` |
+| `opendistroforelasticsearch_conf_file` | path to `elasticsearch.yml` | `{{ opendistroforelasticsearch_conf_dir }}/elasticsearch.yml` |
+| `opendistroforelasticsearch_flags` | extra flags for startup scripts | `""` |
+| `opendistroforelasticsearch_config` | the content of `elasticsearch.yml` | `""` |
+| `opendistroforelasticsearch_http_port` | listen port of `elasticsearch` | `9200` |
+| `opendistroforelasticsearch_java_home` | `JAVA_HOME` environment variable | `{{ __opendistroforelasticsearch_java_home }}` |
+| `opendistroforelasticsearch_extra_plugin_files` | a list of extra files for plug-ins (see below) | `[]` |
+| `opendistroforelasticsearch_include_role_x509_certificate` | if true, include `trombik.x509_certificate` during the play (`trombik.x509_certificate` must be listed in `requirements.yml`) | `yes` |
+
+## `opendistroforelasticsearch_plugins`
+
+This is a list of plug-ins. An element of the list is a dict.
+
+| Key | Description | Mandatory? |
+|-----|-------------|------------|
+| `name` | name of the plug-in | yes |
+| `src` | the source of the plug-in, usually an URL | no |
+
+## `opendistroforelasticsearch_extra_plugin_files`
+
+This variable is a list of files for plug-ins. An element of the list is a
+dict.
+
+| Key | Description | Mandatory? |
+|-----|-------------|------------|
+| `path` | relative path to the file from `opendistroforelasticsearch_plugins_dir` | yes |
+| `type` | either `yaml` or  `raw`. when the type is `yaml`, the value of `content` is rendered as YAML. when the type is `raw`, the value of `content` is rendered as-is. when the value of `state` is omitted, or `present`, `type` must be specified. | no |
+| `mode` | file mode of the file | no |
+| `owner` | owner of the file | no |
+| `group` | group of the file | no |
+| `state` | either `present` or `absent`. `present` creates the file. `absent` deletes the file. the default is `present` | no |
+| `content` | the content of the file (see also `type` above) | no |
 
 ## Debian
 
@@ -88,7 +118,7 @@ None
 
 # Dependencies
 
-- `[trombik.x509_certificate](https://github.com/trombik/ansible-role-x509_certificate)`
+- [`trombik.x509_certificate`](https://github.com/trombik/ansible-role-x509_certificate) when `opendistroforelasticsearch_include_role_x509_certificate` is true
 
 # Example Playbook
 
@@ -135,10 +165,9 @@ None
     os_opendistroforelasticsearch_extra_packages:
       FreeBSD: []
       Debian:
-        # XXX install 7.8.0 becasue the current opendistroforelasticsearch
-        # depends on 7.8.0, but the latest elasticsearch-oss is not the
-        # version.
-        - elasticsearch-oss=7.8.0
+        # XXX install elasticsearch-oss that opendistroforelasticsearch
+        # requires.
+        - elasticsearch-oss=7.9.1
         - unzip
       RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
