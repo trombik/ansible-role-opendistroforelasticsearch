@@ -40,10 +40,9 @@
     os_opendistroforelasticsearch_extra_packages:
       FreeBSD: []
       Debian:
-        # XXX install 7.8.0 becasue the current opendistroforelasticsearch
-        # depends on 7.8.0, but the latest elasticsearch-oss is not the
-        # version.
-        - elasticsearch-oss=7.8.0
+        # XXX install elasticsearch-oss that opendistroforelasticsearch
+        # requires.
+        - elasticsearch-oss=7.9.1
         - unzip
       RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
