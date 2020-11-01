@@ -1,3 +1,8 @@
+## Release 1.1.3
+
+* 8c06a6f doc: update README
+* ec568e2 bugfix: update elasticsearch-oss version for Ubuntu
+
 ## Release 1.1.2
 
 * f1cf850 bugfix: always set "mode" in file and template modules
