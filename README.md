@@ -139,7 +139,7 @@ dict.
     freebsd_pkg_repo:
       local:
         enabled: "true"
-        url: http://pkg.i.trombik.org/121amd64-default-default
+        url: "http://pkg.i.trombik.org/{{ ansible_distribution_version | regex_replace('\\.') }}{{ ansible_architecture }}-default-default"
         mirror_type: none
         priority: 100
         state: present
