@@ -1,0 +1,21 @@
+---
+name: rubocop
+on:
+  - pull_request
+  - push
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+
+      - name: Run rubocop
+        run: |
+          bundle exec rubocop --display-cop-names --extra-details
