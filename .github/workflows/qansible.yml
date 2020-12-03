@@ -1,0 +1,35 @@
+---
+name: qansible
+on:
+  - pull_request
+  - push
+jobs:
+  qansible:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+
+      - name: Checkout the latest release of qansible
+        run: |
+          git clone https://github.com/trombik/qansible.git
+          ( cd qansible && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)) )
+          ( cd qansible && bundle install --with "test" && bundle exec rake build && gem install pkg/*.gem )
+          rm -rf qansible
+          GEM_DIR=`gem env gemdir`
+          ls ${GEM_DIR}/bin
+          echo "PATH=${PATH}:${GEM_DIR}/bin" >> $GITHUB_ENV
+
+      - name: Run qansible
+        run: |
+
+          # surpress a warning from `qansible qa because .kitchen.local.yml is
+          # meant to local environment, not CI.
+          touch .kitchen.local.yml
+          qansible qa
