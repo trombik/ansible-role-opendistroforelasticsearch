@@ -7,8 +7,9 @@
 
 - name: Install opendistroforelasticsearch_package
   yum:
-    name: "{{ opendistroforelasticsearch_package }}"
-    state: present
+    name: "{{ opendistroforelasticsearch_package }}{{ ( opendistroforelasticsearch_version | length > 0 ) | ternary('-' + opendistroforelasticsearch_version, '') }}"
+    state: latest
+    update_cache: yes
 
 - name: Create /etc/sysconfig/elasticsearch
   template:

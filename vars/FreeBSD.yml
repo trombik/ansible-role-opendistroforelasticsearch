@@ -8,5 +8,6 @@ __opendistroforelasticsearch_conf_dir: /usr/local/etc/elasticsearch
 __opendistroforelasticsearch_scripts_dir: ""
 __opendistroforelasticsearch_plugins_dir: "/usr/local/lib/elasticsearch/plugins"
 __opendistroforelasticsearch_plugin_command: /usr/local/lib/elasticsearch/bin/elasticsearch-plugin
+__opendistroforelasticsearch_keystore_command: /usr/local/lib/elasticsearch/bin/elasticsearch-keystore
 __opendistroforelasticsearch_service: elasticsearch
 __opendistroforelasticsearch_java_home: /usr/local

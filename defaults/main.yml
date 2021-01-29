@@ -6,6 +6,7 @@ opendistroforelasticsearch_db_dir: "{{ __opendistroforelasticsearch_db_dir }}"
 opendistroforelasticsearch_scripts_dir: "{{ __opendistroforelasticsearch_scripts_dir }}"
 opendistroforelasticsearch_plugins_dir: "{{ __opendistroforelasticsearch_plugins_dir }}"
 opendistroforelasticsearch_plugin_command: "{{ __opendistroforelasticsearch_plugin_command }}"
+opendistroforelasticsearch_keystore_command: "{{ __opendistroforelasticsearch_keystore_command }}"
 opendistroforelasticsearch_plugins: []
 opendistroforelasticsearch_service: "{{ __opendistroforelasticsearch_service }}"
 opendistroforelasticsearch_package: "{{ __opendistroforelasticsearch_package }}"
@@ -19,3 +20,29 @@ opendistroforelasticsearch_http_port: 9200
 opendistroforelasticsearch_java_home: "{{ __opendistroforelasticsearch_java_home }}"
 opendistroforelasticsearch_extra_plugin_files: []
 opendistroforelasticsearch_include_role_x509_certificate: yes
+opendistroforelasticsearch_version: ""
+opendistroforelasticsearch_remove_demo_certs: no
+opendistroforelasticsearch_reload_security_config: no
+opendistroforelasticsearch_remove_bootstrap_password: no
+opendistroforelasticsearch_reload_security_config_args: ""
+opendistroforelasticsearch_reload_security_config_retries: 12
+opendistroforelasticsearch_reload_security_config_delay: 10
+
+opendistroforelasticsearch_securityconf_action_groups: {}
+opendistroforelasticsearch_securityconf_action_groups_recursive_merge: True
+opendistroforelasticsearch_securityconf_audit: {}
+opendistroforelasticsearch_securityconf_audit_recursive_merge: True
+opendistroforelasticsearch_securityconf_config: {}
+opendistroforelasticsearch_securityconf_config_recursive_merge: True
+opendistroforelasticsearch_securityconf_internal_users: {}
+opendistroforelasticsearch_securityconf_internal_users_recursive_merge: True
+opendistroforelasticsearch_securityconf_nodes_dn: {}
+opendistroforelasticsearch_securityconf_nodes_dn_recursive_merge: True
+opendistroforelasticsearch_securityconf_roles: {}
+opendistroforelasticsearch_securityconf_roles_recursive_merge: True
+opendistroforelasticsearch_securityconf_roles_mapping: {}
+opendistroforelasticsearch_securityconf_roles_mapping_recursive_merge: True
+opendistroforelasticsearch_securityconf_tenants: {}
+opendistroforelasticsearch_securityconf_tenants_recursive_merge: True
+opendistroforelasticsearch_securityconf_whitelist: {}
+opendistroforelasticsearch_securityconf_whitelist_recursive_merge: True
