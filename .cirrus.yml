@@ -55,7 +55,7 @@ task:
 
 
   setup_packages_script:
-    - apt-get --quiet --yes install wget ruby ruby-dev sudo
+    - apt-get --quiet --yes install wget ruby ruby-dev sudo python3-pip
 
   setup_vagrant_script:
     - wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
