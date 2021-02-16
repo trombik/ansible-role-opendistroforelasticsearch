@@ -63,12 +63,13 @@ task:
     - apt-get --quiet --yes install qemu libvirt-daemon-system libvirt-clients ebtables dnsmasq-base libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
     - useradd --user-group --groups libvirt-qemu,sudo --create-home --comment "The test user" ${VAGRANT_USER}
     - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
-    - ${RUN_AS_VAGRANT} vagrant plugin install --debug --verbose --plugin-source https://rubygems.org/ vagrant-libvirt
 
   setup_vagrant_script:
+    - apt-get remove vagrant
     - wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
     - dpkg -i vagrant_2.2.14_x86_64.deb
     - vagrant --version
+    - ${RUN_AS_VAGRANT} vagrant plugin install --debug --verbose --plugin-source https://rubygems.org/ vagrant-libvirt
 
   setup_qemu_script:
 
