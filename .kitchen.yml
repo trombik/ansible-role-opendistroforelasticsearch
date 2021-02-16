@@ -23,6 +23,7 @@ provisioner:
     - filter_plugins
   custom_pre_play_command: |
     cat /etc/ansible/ansible.cfg
+    find /tmp/kitchen
 
 platforms:
   - name: freebsd-12.1-amd64
