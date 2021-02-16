@@ -85,6 +85,13 @@ task:
   libvirtd_log_script:
     - sleep 10
     - cat /var/log/libvirtd.log
+    - virsh net-list --all || echo "Exit code: $?"
+    - ifconfig || echo "Exit code: $?"
+    - cat /etc/network/interfaces || echo "Exit code: $?"
+    - brctl show || echo "Exit code: $?"
+    - iptables -S || echo "Exit code: $?"
+    - iptables-legacy -S || echo "Exit code: $?"
+    - iptables-nft -S || echo "Exit code: $?"
 
   setup_ruby_script:
     - gem install bundler
