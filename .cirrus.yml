@@ -80,10 +80,10 @@ task:
     - /usr/sbin/virtlogd
 
   libvirtd_background_script:
-    - sleep 2 && /usr/sbin/libvirtd
+    - sleep 2 && /usr/sbin/libvirtd 2>&1 | tee /var/log/libvirtd.log
 
   libvirtd_log_script:
-    - grep libvirtd /var/log/syslog
+    - cat libvirtd /var/log/libvirtd.log
 
   setup_ruby_script:
     - gem install bundler
@@ -117,6 +117,8 @@ task:
       - ls -al ${VAGRANT_HOME}
     cache_debug_script:
       - find "${VAGRANT_HOME}/cache" -type f || echo "Exit code: $?"
+    libvirtd_log_script:
+      - cat libvirtd /var/log/libvirtd.log
     kvm_debug_script:
       - ls -al /dev/kvm
       - free -h
