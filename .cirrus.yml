@@ -55,7 +55,7 @@ task:
 
 
   setup_packages_script:
-    - apt-get --quiet --yes install wget ruby
+    - apt-get --quiet --yes install wget ruby sudo
 
   setup_vagrant_script:
     - wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
@@ -67,7 +67,7 @@ task:
     # fixup qemu.conf. do not use root
     - sed -i.bak -e 's/user = "root"//g' /etc/libvirt/qemu.conf
 
-    - useradd --user-group --groups libvirt-qemu --create-home --comment "The test user" ${VAGRANT_USER}
+    - useradd --user-group --groups libvirt-qemu,sudo --create-home --comment "The test user" ${VAGRANT_USER}
     - chown -R ${VAGRANT_USER}:${VAGRANT_USER} .
 
   virtlogd_background_script:
@@ -105,7 +105,7 @@ task:
     env_debug_script:
       - env | sort
     cache_debug_script:
-      - find "$HOME/cache" -type f || echo "Exit code: $?"
+      - find "${VAGRANT_HOME}/cache" -type f || echo "Exit code: $?"
     kvm_debug_script:
       - ls -al /dev/kvm
       - free -h
