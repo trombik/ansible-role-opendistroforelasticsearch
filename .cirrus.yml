@@ -81,10 +81,10 @@ task:
 
   libvirtd_background_script:
     - sleep 2 && /usr/sbin/libvirtd 2>&1 | tee /var/log/libvirtd.log
-    - sleep 10
 
   libvirtd_log_script:
-    - cat libvirtd /var/log/libvirtd.log
+    - sleep 10
+    - cat /var/log/libvirtd.log
 
   setup_ruby_script:
     - gem install bundler
