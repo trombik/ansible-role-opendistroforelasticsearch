@@ -16,11 +16,13 @@ task:
     cpu: 4
 
   env:
-
+    VAGRANT_USER: vagrant
+    VAGRANT_HOME: /home/${VAGRANT_USER}
+    RUN_AS_VAGRANT: sudo -u ${VAGRANT_USER}
+    PIP_CACHE_DIR: $VAGRANT_HOME/cache/pip
     # VENVDIR must be absolute path for 'cd && make' approach to work
     # VENVDIR should not be cached! Cirrus CI drops some binaries randomly
-    PIP_CACHE_DIR: $HOME/cache/pip
-    VENVDIR: $HOME/venv
+    VENVDIR: $VAGRANT_HOME/venv
 
     # Force colored output
     PY_COLORS: '1'  # https://www.jeffgeerling.com/blog/2020/getting-colorized-output-molecule-and-ansible-on-github-actions-ci
@@ -37,7 +39,7 @@ task:
   # CI cache
   # TODO: explore possibility of caching libvirtd image pool
   pip_cache:  # ~20 sec speedup
-    folder: $HOME/cache
+    folder: ${VAGRANT_HOME}/cache
     fingerprint_script:
       - echo "Python packages cache"
       - echo "$CACHE_KEY"
@@ -71,10 +73,10 @@ task:
 
   setup_ruby_script:
     - gem install bundler
-    - bundle install --path ${HOME}/.bundler
+    - ${RUN_AS_VAGRANT} bundle install --path ${VAGRANT_HOME}/.bundler
 
   setup_python_script:
-    - pip install ansible yamllint molecule
+    - ${RUN_AS_VAGRANT} pip install ansible yamllint molecule
     - ansible --version
     - yamllint --version
     - molecule --version
@@ -87,11 +89,11 @@ task:
     - printf '[defaults]\nstdout_callback = yaml\nroles_path=../:extra_roles' >ansible.cfg
 
     # Download depended roles
-    - if [ -f requirements.yml ]; then ansible-galaxy install -r requirements.yml -p extra_roles; fi
-    - if [ -f requirements.yml ]; then ansible-galaxy collection install -r requirements.yml -p collections; fi
+    - if [ -f requirements.yml ]; then ${RUN_AS_VAGRANT} ansible-galaxy install -r requirements.yml -p extra_roles; fi
+    - if [ -f requirements.yml ]; then ${RUN_AS_VAGRANT} ansible-galaxy collection install -r requirements.yml -p collections; fi
 
     # run test
-    - bundle exec kitchen list
+    - ${RUN_AS_VAGRANT} bundle exec kitchen list
 
   # Debugging information
   always:
