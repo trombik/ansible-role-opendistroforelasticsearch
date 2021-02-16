@@ -117,7 +117,7 @@ task:
       - ls -al ${VAGRANT_HOME}
     cache_debug_script:
       - find "${VAGRANT_HOME}/cache" -type f || echo "Exit code: $?"
-    libvirtd_log_script:
+    libvirtd_debug_script:
       - cat libvirtd /var/log/libvirtd.log
     kvm_debug_script:
       - ls -al /dev/kvm
