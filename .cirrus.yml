@@ -42,11 +42,6 @@ task:
       - echo "Python packages cache"
       - echo "$CACHE_KEY"
 
-  # Clone correct repo instead of dummy GitHub placeholder
-  clone_script:
-    - git clone "$CLONE_URL" .
-    - git reset --hard "$CLONE_SHA"
-
   # CI environment does not provide systemd,
   # we have to start the daemons manually
   iptables_legacy_script:
