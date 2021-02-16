@@ -60,7 +60,7 @@ task:
 
     # from https://github.com/vagrant-libvirt/vagrant-libvirt
     # - apt-get build-dep vagrant ruby-libvirt
-    - apt-get --quiet --yes install qemu libvirt-daemon-system bridge-utils ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils libvirt-clients ebtables dnsmasq-base libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
+    - apt-get --quiet --yes install qemu libvirt-daemon-system bridge-utils ebtables libvirt-dev qemu-kvm qemu-utils libvirt-clients ebtables dnsmasq-base libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
     - useradd --user-group --groups libvirt-qemu,libvirt,sudo --create-home --comment "The test user" ${VAGRANT_USER}
     - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
 
