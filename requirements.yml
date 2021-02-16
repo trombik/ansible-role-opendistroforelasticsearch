@@ -1,7 +1,9 @@
 ---
-- name: trombik.sysctl
-- name: trombik.java
-- name: trombik.freebsd_pkg_repo
-- name: trombik.apt_repo
-- name: trombik.redhat_repo
-- name: trombik.x509_certificate
+roles:
+  - name: trombik.sysctl
+  - name: trombik.java
+  - name: trombik.freebsd_pkg_repo
+  - name: trombik.apt_repo
+  - name: trombik.redhat_repo
+  - name: trombik.x509_certificate
+collections: []
