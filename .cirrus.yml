@@ -82,9 +82,9 @@ task:
 
   setup_python_script:
     - ${RUN_AS_VAGRANT} pip3 install --user ansible yamllint molecule
-    - ansible --version
-    - yamllint --version
-    - molecule --version
+    - ${RUN_AS_VAGRANT} ansible --version
+    - ${RUN_AS_VAGRANT} yamllint --version
+    - ${RUN_AS_VAGRANT} molecule --version
 
   # Execute automated tests
   test_script:
