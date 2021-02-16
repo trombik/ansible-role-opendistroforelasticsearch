@@ -92,6 +92,8 @@ task:
     - iptables -S || echo "Exit code: $?"
     - iptables-legacy -S || echo "Exit code: $?"
     - iptables-nft -S || echo "Exit code: $?"
+    - pstree -alT
+    - ps -eo ppid,pid,user,cpu,rss,stat,start,command
 
   setup_ruby_script:
     - gem install bundler
