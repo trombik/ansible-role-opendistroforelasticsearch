@@ -46,11 +46,26 @@ task:
   # we have to start the daemons manually
   iptables_legacy_script:
     - update-alternatives --set iptables /usr/sbin/iptables-legacy
+
   dbus_background_script:
     - mkdir -p /var/run/dbus
     - /usr/bin/dbus-daemon --system --nofork --nopidfile
+
+  setup_vagrant_script:
+    - wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
+    - dpkg -i vagrant_2.2.14_x86_64.deb
+    - vagrant --version
+
+  setup_qemu_script:
+
+    # fixup qemu.conf. do not use root
+    - sed -i.bak -e 's/user = "root"//g' /etc/libvirt/qemu.conf
+
+    - usermod -a -G libvirt-qemu vagrant
+
   virtlogd_background_script:
     - /usr/sbin/virtlogd
+
   libvirtd_background_script:
     - sleep 2 && /usr/sbin/libvirtd
 
@@ -63,11 +78,6 @@ task:
     - ansible --version
     - yamllint --version
     - molecule --version
-
-  setup_vagrant_script:
-    - wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
-    - dpkg -i vagrant_2.2.14_x86_64.deb
-    - vagrant --version
 
   # Execute automated tests
   test_script:
@@ -90,6 +100,7 @@ task:
     cache_debug_script:
       - find "$HOME/cache" -type f || echo "Exit code: $?"
     kvm_debug_script:
+      - ls -al /dev/kvm
       - free -h
       - pstree -alT
       - ps -eo ppid,pid,user,cpu,rss,stat,start,command
