@@ -21,7 +21,6 @@ provisioner:
   additional_copy_path:
     - extra_modules
     - filter_plugins
-  roles_path: roles
 
 platforms:
   - name: freebsd-12.1-amd64
