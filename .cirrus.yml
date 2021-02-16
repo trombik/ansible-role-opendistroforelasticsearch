@@ -58,6 +58,11 @@ task:
   setup_packages_script:
     - apt-get --quiet --yes install wget ruby ruby-dev sudo python3-pip
 
+    # from https://github.com/vagrant-libvirt/vagrant-libvirt
+    - apt-get build-dep vagrant ruby-libvirt
+    - apt-get --quiet --yes install qemu libvirt-daemon-system libvirt-clients ebtables dnsmasq-base libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
+    - ${RUN_AS_VAGRANT} vagrant plugin install vagrant-libvirt
+
   setup_vagrant_script:
     - wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
     - dpkg -i vagrant_2.2.14_x86_64.deb
