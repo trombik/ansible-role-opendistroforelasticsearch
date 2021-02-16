@@ -21,6 +21,8 @@ provisioner:
   additional_copy_path:
     - extra_modules
     - filter_plugins
+  custom_pre_play_command: |
+    cat /etc/ansible/ansible.cfg
 
 platforms:
   - name: freebsd-12.1-amd64
