@@ -22,7 +22,7 @@ task:
     # VENVDIR should not be cached! Cirrus CI drops some binaries randomly
     VENVDIR: $VAGRANT_HOME/venv
     SUDO_ENV: PATH=${PATH}:${VAGRANT_HOME}/.local/bin VENVDIR=${VAGRANT_HOME}/venv PIP_CACHE_DIR=${VAGRANT_HOME}/cache/pip
-    RUN_AS_VAGRANT: env ${SUDO_ENV} sudo -u ${VAGRANT_USER}
+    RUN_AS_VAGRANT: sudo -u ${VAGRANT_USER} env ${SUDO_ENV}
 
     # Force colored output
     PY_COLORS: '1'  # https://www.jeffgeerling.com/blog/2020/getting-colorized-output-molecule-and-ansible-on-github-actions-ci
