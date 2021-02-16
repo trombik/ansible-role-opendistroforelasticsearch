@@ -119,6 +119,10 @@ task:
     # run test
     - ${RUN_AS_VAGRANT} bundle exec kitchen list
     - ${RUN_AS_VAGRANT} bundle exec kitchen test ubuntu
+    - pstree -alT
+    - ps -eo ppid,pid,user,cpu,rss,stat,start,command
+    - cat /var/log/libvirtd.log
+    - virsh net-list --all || echo "Exit code: $?"
 
   # Debugging information
   always:
