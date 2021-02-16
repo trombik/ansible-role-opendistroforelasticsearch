@@ -12,7 +12,7 @@ provisioner:
   name: ansible_playbook
   require_chef_for_busser: false
   require_ruby_for_busser: false
-  ansible_verbosity: 1
+  ansible_verbosity: 4
   ansible_verbose: true
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
   requirements_path: requirements.yml
