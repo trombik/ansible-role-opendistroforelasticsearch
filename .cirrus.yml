@@ -82,6 +82,9 @@ task:
   libvirtd_background_script:
     - sleep 2 && /usr/sbin/libvirtd
 
+  libvirtd_log_script:
+    - grep libvirtd /var/log/syslog
+
   setup_ruby_script:
     - gem install bundler
     - ${RUN_AS_VAGRANT} bundle install --path ${VAGRANT_HOME}/.bundle
