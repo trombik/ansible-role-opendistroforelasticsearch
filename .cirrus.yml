@@ -20,6 +20,7 @@ task:
     VAGRANT_HOME: /home/${VAGRANT_USER}
     RUN_AS_VAGRANT: sudo -u ${VAGRANT_USER}
     PIP_CACHE_DIR: $VAGRANT_HOME/cache/pip
+    PATH: ${PATH}:${VAGRANT_HOME}/.local/bin
     # VENVDIR must be absolute path for 'cd && make' approach to work
     # VENVDIR should not be cached! Cirrus CI drops some binaries randomly
     VENVDIR: $VAGRANT_HOME/venv
