@@ -81,7 +81,7 @@ task:
     - ${RUN_AS_VAGRANT} bundle install --path ${VAGRANT_HOME}/.bundler
 
   setup_python_script:
-    - ${RUN_AS_VAGRANT} pip install ansible yamllint molecule
+    - ${RUN_AS_VAGRANT} pip3 install --user ansible yamllint molecule
     - ansible --version
     - yamllint --version
     - molecule --version
