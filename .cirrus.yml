@@ -67,7 +67,8 @@ task:
     # fixup qemu.conf. do not use root
     - sed -i.bak -e 's/user = "root"//g' /etc/libvirt/qemu.conf
 
-    - usermod -a -G libvirt-qemu vagrant
+    - useradd --user-group --groups libvirt-qemu --create-home --comment "The test user" ${VAGRANT_USER}
+    - chown -R ${VAGRANT_USER}:${VAGRANT_USER} .
 
   virtlogd_background_script:
     - /usr/sbin/virtlogd
