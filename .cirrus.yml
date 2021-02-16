@@ -1,0 +1,112 @@
+# see https://potyarkin.ml/posts/2020/running-libvirt-kvm-in-cirrus-ci/
+# obtained from: https://gitlab.com/sio/server_common/-/blob/master/.cirrus.yml.j2
+#
+# SECONDARY ENTRYPOINT FOR CONTINUOUS INTEGRATION JOBS
+#
+# Tests that require full virtualization are delegated to Cirrus CI.
+# Jobs described in this file are triggered by executing `cirrus-run`
+
+
+task:
+  name: test-ansible-role-kvm
+  container:
+    image: potyarkin/molecule:host-kvm  # Debian 10
+    kvm: true
+    {% if CIRRUS_RAM is defined %}
+    memory: "{{ CIRRUS_RAM }}"
+    {% endif %}
+
+  env:
+    PIP_CACHE_DIR: $HOME/cache/pip
+    VENVDIR: $HOME/venv
+    # VENVDIR must be absolute path for 'cd && make' approach to work
+    # VENVDIR should not be cached! Cirrus CI drops some binaries randomly
+
+    # Pass values from cirrus-run environment
+    CLONE_URL: "{{ CI_REPOSITORY_URL }}"
+    CLONE_SHA: "{{ CI_COMMIT_SHA }}"
+    ANSIBLE_ROLE: "{{ ANSIBLE_ROLE }}"
+    CACHE_KEY: "{{ REQUIREMENTS_CHECKSUM }}"
+    {% if MOLECULE_SCENARIO is defined %}
+    MOLECULE_SCENARIO: "{{ MOLECULE_SCENARIO }}"
+    {% endif %}
+    {% if REQUIREMENTS_TXT is defined %}
+    REQUIREMENTS_TXT: "{{ REQUIREMENTS_TXT.split('/') | list | last }}"
+    {% endif %}
+
+    # Force colored output
+    PY_COLORS: '1'  # https://www.jeffgeerling.com/blog/2020/getting-colorized-output-molecule-and-ansible-on-github-actions-ci
+    ANSIBLE_FORCE_COLOR: '1'
+
+    # Variables that might be helpful for debugging
+    {% if DEBUG is defined %}
+    DEBUG: "{{ DEBUG }}"
+    {% endif %}
+    #   DEBUG: 1
+    #   VIRSH_DEBUG: 1
+    #   LIBVIRT_DEBUG: 2
+    #   LIBGUESTFS_DEBUG: 1
+    #   LIBGUESTFS_TRACE: 1
+
+  # CI cache
+  # TODO: explore possibility of caching libvirtd image pool
+  pip_cache:  # ~20 sec speedup
+    folder: $HOME/cache
+    fingerprint_script:
+      - echo "Python packages cache"
+      - echo "$CACHE_KEY"
+
+  # Clone correct repo instead of dummy GitHub placeholder
+  clone_script:
+    - git clone "$CLONE_URL" .
+    - git reset --hard "$CLONE_SHA"
+
+  # CI environment does not provide systemd,
+  # we have to start the daemons manually
+  iptables_legacy_script:
+    - update-alternatives --set iptables /usr/sbin/iptables-legacy
+  dbus_background_script:
+    - mkdir -p /var/run/dbus
+    - /usr/bin/dbus-daemon --system --nofork --nopidfile
+  virtlogd_background_script:
+    - /usr/sbin/virtlogd
+  libvirtd_background_script:
+    - sleep 2 && /usr/sbin/libvirtd
+
+  # Execute automated tests
+  test_script:
+    - cd ansible/tests
+    - make test
+
+  # Debugging information
+  always:
+    cache_debug_script:
+      - find "$HOME/cache" -type f || echo "Exit code: $?"
+    kvm_debug_script:
+      - free -h
+      - pstree -alT
+      - ps -eo ppid,pid,user,cpu,rss,stat,start,command
+      - lsmod
+      - kvm-ok || echo "Exit code: $?"
+      - ls -l /dev/kvm || echo "Exit code: $?"
+      - ls -l /var/run/libvirt || echo "Exit code: $?"
+      - whoami
+      - groups $(whoami)
+      - systemctl status || echo "Exit code: $?"
+      - cat /proc/cpuinfo
+      - lscpu
+      - virsh capabilities
+      - virt-host-validate || echo "Exit code: $?"
+      - cat /sys/module/kvm_*/parameters/nested || echo "Exit code: $?"
+    network_debug_script:
+      - virsh net-list --all || echo "Exit code: $?"
+      - virsh net-dumpxml vagrant-libvirt || echo "Exit code: $?"
+      - ifconfig || echo "Exit code: $?"
+      - cat /etc/network/interfaces || echo "Exit code: $?"
+      - brctl show || echo "Exit code: $?"
+      - iptables -S || echo "Exit code: $?"
+      - iptables-legacy -S || echo "Exit code: $?"
+      - iptables-nft -S || echo "Exit code: $?"
+    molecule_debug_script:
+      - find /root/.cache/molecule/ -type f -exec tail -v -n+0 {} \; || echo "Exit code: $?"
+
