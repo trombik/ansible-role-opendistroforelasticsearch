@@ -84,8 +84,7 @@ task:
 
   setup_ruby_script:
     - gem install bundler
-    - ${RUN_AS_VAGRANT} bundle config set local ${VAGRANT_HOME}/.bundle
-    - ${RUN_AS_VAGRANT} bundle install
+    - ${RUN_AS_VAGRANT} bundle install --path ${VAGRANT_HOME}/.bundle
 
   setup_python_script:
     - ${RUN_AS_VAGRANT} pip3 install --user ansible yamllint molecule
