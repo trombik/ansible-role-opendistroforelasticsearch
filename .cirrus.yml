@@ -118,7 +118,7 @@ task:
 
     # run test
     - ${RUN_AS_VAGRANT} bundle exec kitchen list
-    - ${RUN_AS_VAGRANT} bundle exec kitchen test ubuntu
+    - ${RUN_AS_VAGRANT} bundle exec kitchen test ubuntu-1804
     - pstree -alT
     - ps -eo ppid,pid,user,cpu,rss,stat,start,command
     - cat /var/log/libvirtd.log
