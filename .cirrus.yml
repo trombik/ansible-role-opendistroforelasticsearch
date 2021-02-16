@@ -59,7 +59,7 @@ task:
     - apt-get --quiet --yes install wget ruby ruby-dev sudo python3-pip
 
     # from https://github.com/vagrant-libvirt/vagrant-libvirt
-    - apt-get build-dep vagrant ruby-libvirt
+    # - apt-get build-dep vagrant ruby-libvirt
     - apt-get --quiet --yes install qemu libvirt-daemon-system libvirt-clients ebtables dnsmasq-base libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
     - ${RUN_AS_VAGRANT} vagrant plugin install vagrant-libvirt
 
