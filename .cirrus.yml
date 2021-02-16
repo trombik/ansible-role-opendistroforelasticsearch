@@ -61,6 +61,8 @@ task:
     # from https://github.com/vagrant-libvirt/vagrant-libvirt
     # - apt-get build-dep vagrant ruby-libvirt
     - apt-get --quiet --yes install qemu libvirt-daemon-system libvirt-clients ebtables dnsmasq-base libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
+    - useradd --user-group --groups libvirt-qemu,sudo --create-home --comment "The test user" ${VAGRANT_USER}
+    - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
     - ${RUN_AS_VAGRANT} vagrant plugin install vagrant-libvirt
 
   setup_vagrant_script:
@@ -72,9 +74,6 @@ task:
 
     # fixup qemu.conf. do not use root
     - sed -i.bak -e 's/user = "root"//g' /etc/libvirt/qemu.conf
-
-    - useradd --user-group --groups libvirt-qemu,sudo --create-home --comment "The test user" ${VAGRANT_USER}
-    - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
 
   virtlogd_background_script:
     - /usr/sbin/virtlogd
