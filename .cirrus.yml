@@ -119,6 +119,7 @@ task:
     # run test
     - ${RUN_AS_VAGRANT} bundle exec kitchen list
     - ${RUN_AS_VAGRANT} bundle exec kitchen test ubuntu-1804
+    - cat /etc/ansible/ansible.cfg
     - pstree -alT
     - ps -eo ppid,pid,user,cpu,rss,stat,start,command
     - cat /var/log/libvirtd.log
