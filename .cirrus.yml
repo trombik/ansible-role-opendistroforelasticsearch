@@ -65,7 +65,7 @@ task:
     - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
 
   setup_vagrant_script:
-    - apt-get remove vagrant
+    - apt-get -y remove vagrant
     - wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
     - dpkg -i vagrant_2.2.14_x86_64.deb
     - vagrant --version
