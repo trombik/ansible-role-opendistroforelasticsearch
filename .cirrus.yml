@@ -1,3 +1,4 @@
+---
 # see https://potyarkin.ml/posts/2020/running-libvirt-kvm-in-cirrus-ci/
 # obtained from: https://gitlab.com/sio/server_common/-/blob/master/.cirrus.yml.j2
 #
@@ -6,42 +7,27 @@
 # Tests that require full virtualization are delegated to Cirrus CI.
 # Jobs described in this file are triggered by executing `cirrus-run`
 
-
 task:
   name: test-ansible-role-kvm
   container:
     image: potyarkin/molecule:host-kvm  # Debian 10
     kvm: true
-    {% if CIRRUS_RAM is defined %}
-    memory: "{{ CIRRUS_RAM }}"
-    {% endif %}
+    memory: 12G
+    cpu: 4
 
   env:
-    PIP_CACHE_DIR: $HOME/cache/pip
-    VENVDIR: $HOME/venv
+
     # VENVDIR must be absolute path for 'cd && make' approach to work
     # VENVDIR should not be cached! Cirrus CI drops some binaries randomly
-
-    # Pass values from cirrus-run environment
-    CLONE_URL: "{{ CI_REPOSITORY_URL }}"
-    CLONE_SHA: "{{ CI_COMMIT_SHA }}"
-    ANSIBLE_ROLE: "{{ ANSIBLE_ROLE }}"
-    CACHE_KEY: "{{ REQUIREMENTS_CHECKSUM }}"
-    {% if MOLECULE_SCENARIO is defined %}
-    MOLECULE_SCENARIO: "{{ MOLECULE_SCENARIO }}"
-    {% endif %}
-    {% if REQUIREMENTS_TXT is defined %}
-    REQUIREMENTS_TXT: "{{ REQUIREMENTS_TXT.split('/') | list | last }}"
-    {% endif %}
+    PIP_CACHE_DIR: $HOME/cache/pip
+    VENVDIR: $HOME/venv
 
     # Force colored output
     PY_COLORS: '1'  # https://www.jeffgeerling.com/blog/2020/getting-colorized-output-molecule-and-ansible-on-github-actions-ci
     ANSIBLE_FORCE_COLOR: '1'
 
     # Variables that might be helpful for debugging
-    {% if DEBUG is defined %}
-    DEBUG: "{{ DEBUG }}"
-    {% endif %}
+    DEBUG: 1
     #   DEBUG: 1
     #   VIRSH_DEBUG: 1
     #   LIBVIRT_DEBUG: 2
@@ -109,4 +95,3 @@ task:
       - iptables-nft -S || echo "Exit code: $?"
     molecule_debug_script:
       - find /root/.cache/molecule/ -type f -exec tail -v -n+0 {} \; || echo "Exit code: $?"
-
