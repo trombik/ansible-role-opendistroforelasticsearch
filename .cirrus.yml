@@ -81,6 +81,7 @@ task:
 
   libvirtd_background_script:
     - sleep 2 && /usr/sbin/libvirtd 2>&1 | tee /var/log/libvirtd.log
+    - sleep 10
 
   libvirtd_log_script:
     - cat libvirtd /var/log/libvirtd.log
@@ -118,7 +119,7 @@ task:
     cache_debug_script:
       - find "${VAGRANT_HOME}/cache" -type f || echo "Exit code: $?"
     libvirtd_debug_script:
-      - cat libvirtd /var/log/libvirtd.log
+      - cat /var/log/libvirtd.log
     kvm_debug_script:
       - ls -al /dev/kvm
       - free -h
