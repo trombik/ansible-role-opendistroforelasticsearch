@@ -69,7 +69,7 @@ task:
     - sed -i.bak -e 's/user = "root"//g' /etc/libvirt/qemu.conf
 
     - useradd --user-group --groups libvirt-qemu,sudo --create-home --comment "The test user" ${VAGRANT_USER}
-    - chown -R ${VAGRANT_USER}:${VAGRANT_USER} .
+    - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
 
   virtlogd_background_script:
     - /usr/sbin/virtlogd
@@ -105,6 +105,7 @@ task:
   always:
     env_debug_script:
       - env | sort
+      - ls -al ${VAGRANT_HOME}
     cache_debug_script:
       - find "${VAGRANT_HOME}/cache" -type f || echo "Exit code: $?"
     kvm_debug_script:
