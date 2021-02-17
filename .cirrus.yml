@@ -112,6 +112,8 @@ task:
     - mkdir -p extra_roles
     - printf '[defaults]\nstdout_callback = yaml\nroles_path=../:extra_roles' >ansible.cfg
     - cat ansible.cfg
+    - pwd
+    - ls -al
 
     # Download depended roles
     - if [ -f requirements.yml ]; then ${RUN_AS_VAGRANT} ansible-galaxy install -r requirements.yml -p extra_roles; fi

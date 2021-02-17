@@ -21,6 +21,7 @@ provisioner:
   additional_copy_path:
     - extra_modules
     - filter_plugins
+  role_name: ansible-role-opendistroforelasticsearch
   custom_pre_play_command: |
     cat /etc/ansible/ansible.cfg
     find /tmp/kitchen
