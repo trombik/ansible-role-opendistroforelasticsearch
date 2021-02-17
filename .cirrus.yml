@@ -11,7 +11,8 @@ task:
       - id
       - uname -msr
       - sysctl kern.osrelease kern.osrevision kern.osreldate
-      - sysctl kernkern.version
+      - sysctl kern.version
       - ifconfig
       - pkg info
       - dmesg
+      - ps axd
