@@ -65,7 +65,9 @@ task:
 
     # virtualbox
     # - sudo apt-get install "linux-headers-`uname -r`"
-    - apt-get --quiet --yes install lsb-release software-properties-common apt-transport-https ca-certificates
+    - uname -r
+    - apt-cache search linux-headers
+    - apt-get --quiet --yes install lsb-release software-properties-common apt-transport-https ca-certificates udev
     - wget -q https://github.com/trombik/ansible-role-sensu_go_backend/releases/download/1.4.0/oracle_vbox_2016.asc -O - | sudo apt-key add -
     - add-apt-repository -y "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian `lsb_release -cs` contrib"
     - apt-get update
