@@ -21,12 +21,14 @@ provisioner:
   additional_copy_path:
     - extra_modules
     - filter_plugins
+<% if ENV["CIRRUS_REPO_NAME"] -%>
   # XXX set role_name in cirrus ci to fix up the role name.
   #
   # in cirrus ci, the directory name of PWD is not the repository name, but
   # `cirrus-ci-build`. kitchen copy the role under `roles` directory with that
   # name. thus, ansible cannot  find the role.
-  role_name: <%= ENV["CIRRUS_REPO_NAME"] ? ENV["CIRRUS_REPO_NAME"] : "ansible-role-opendistroforelasticsearch" %>
+  role_name: <%= ENV["CIRRUS_REPO_NAME"] ? ENV["CIRRUS_REPO_NAME"] : "~" %>
+<% end -%>
 
 platforms:
   - name: freebsd-12.1-amd64
