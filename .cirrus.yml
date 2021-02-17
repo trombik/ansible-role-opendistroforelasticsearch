@@ -70,6 +70,7 @@ task:
     - add-apt-repository -y "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian `lsb_release -cs` contrib"
     - apt-get update
     - apt-get --quiet --yes install virtualbox-6.1
+    - VBoxManage --version
 
     - useradd --user-group --groups libvirt-qemu,libvirt,sudo --create-home --comment "The test user" ${VAGRANT_USER}
     - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
