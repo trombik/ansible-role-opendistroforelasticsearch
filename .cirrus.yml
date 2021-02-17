@@ -65,11 +65,11 @@ task:
 
     # virtualbox
     # - sudo apt-get install "linux-headers-`uname -r`"
-    - apt-get install lsb-release
+    - apt-get --quiet --yes install lsb-release
     - wget -q https://github.com/trombik/ansible-role-sensu_go_backend/releases/download/1.4.0/oracle_vbox_2016.asc -O - | sudo apt-key add -
     - add-apt-repository -y "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian `lsb_release -cs` contrib"
     - apt-get update
-    - apt-get install virtualbox-6.1
+    - apt-get --quiet --yes install virtualbox-6.1
 
     - useradd --user-group --groups libvirt-qemu,libvirt,sudo --create-home --comment "The test user" ${VAGRANT_USER}
     - chown -R ${VAGRANT_USER}:${VAGRANT_USER} ${VAGRANT_HOME} .
