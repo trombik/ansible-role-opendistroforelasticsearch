@@ -29,9 +29,6 @@ provisioner:
   # name. thus, ansible cannot  find the role.
   role_name: <%= ENV['CIRRUS_REPO_NAME'] %>
 <% end %>
-  custom_pre_play_command: |
-    cat /etc/ansible/ansible.cfg
-    find /tmp/kitchen
 
 platforms:
   - name: freebsd-12.1-amd64
