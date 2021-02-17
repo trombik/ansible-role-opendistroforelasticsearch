@@ -26,7 +26,7 @@ provisioner:
   # in cirrus ci, the directory name of PWD is not the repository name, but
   # `cirrus-ci-build`. kitchen copy the role under `roles` directory with that
   # name. thus, ansible cannot  find the role.
-  role_name: <%= ENV['CIRRUS_REPO_NAME'] ? ENV['CIRRUS_REPO_NAME'] : "~" %>
+  role_name: <%= ENV["CIRRUS_REPO_NAME"] ? ENV["CIRRUS_REPO_NAME"] : "~" %>
 
 platforms:
   - name: freebsd-12.1-amd64
