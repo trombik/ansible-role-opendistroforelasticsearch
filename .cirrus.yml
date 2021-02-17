@@ -101,6 +101,7 @@ task:
 
     # run test
     - ${RUN_AS_VAGRANT} bundle exec kitchen list
+    - ${RUN_AS_VAGRANT} bundle exec env
     - ${RUN_AS_VAGRANT} bundle exec kitchen test ubuntu-1804
 
   # Debugging information
