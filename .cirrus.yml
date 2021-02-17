@@ -64,7 +64,7 @@ task:
     - apt-get --quiet --yes install qemu libvirt-daemon-system bridge-utils ebtables libvirt-dev qemu-kvm qemu-utils libvirt-clients ebtables dnsmasq-base libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
 
     # virtualbox
-    - sudo apt-get install "linux-headers-`uname -r`"
+    # - sudo apt-get install "linux-headers-`uname -r`"
     - wget -q https://github.com/trombik/ansible-role-sensu_go_backend/releases/download/1.4.0/oracle_vbox_2016.asc -O - | sudo apt-key add -
     - sudo add-apt-repository -y "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian `lsb_release -cs` contrib"
     - sudo apt-get update
