@@ -145,7 +145,7 @@ when "openbsd"
     it { should be_mode 644 }
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
-    its(:content) { should match(/JAVA_OPTS=\"#{Regexp.escape("-XX:+UseCompressedOops")}\"$/) }
+    its(:content) { should match(/JAVA_OPTS="#{Regexp.escape("-XX:+UseCompressedOops")}"$/) }
   end
 end
 

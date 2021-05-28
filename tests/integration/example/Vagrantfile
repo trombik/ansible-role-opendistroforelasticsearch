@@ -4,18 +4,18 @@ require "socket"
 # @return [String] public IP address of workstation used for egress traffic
 def local_ip
   @local_ip ||= begin
-                  # turn off reverse DNS resolution temporarily
-                  orig = Socket.do_not_reverse_lookup
-                  Socket.do_not_reverse_lookup = true
+    # turn off reverse DNS resolution temporarily
+    orig = Socket.do_not_reverse_lookup
+    Socket.do_not_reverse_lookup = true
 
-                  # open UDP socket so that it never send anything over the network
-                  UDPSocket.open do |s|
-                    s.connect "8.8.8.8", 1 # any global IP address works here
-                    s.addr.last
-                  end
-                ensure
-                  Socket.do_not_reverse_lookup = orig
-                end
+    # open UDP socket so that it never send anything over the network
+    UDPSocket.open do |s|
+      s.connect "8.8.8.8", 1 # any global IP address works here
+      s.addr.last
+    end
+  ensure
+    Socket.do_not_reverse_lookup = orig
+  end
 end
 
 # @return [Integer] default listening port
@@ -38,7 +38,7 @@ rescue SocketError, Errno::ECONNREFUSED,
 rescue Errno::EPERM, Errno::ETIMEDOUT
   false
 ensure
-  socket&.close
+  socket.close
 end
 http_proxy = proxy_running? ? http_proxy_url : ""
 
