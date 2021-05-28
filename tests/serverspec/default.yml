@@ -65,7 +65,7 @@
     os_opendistroforelasticsearch_package:
       FreeBSD: "{{ __opendistroforelasticsearch_package }}"
       Debian: "{{ __opendistroforelasticsearch_package }}"
-      RedHat: opendistroforelasticsearch-1.2.0-1
+      RedHat: opendistroforelasticsearch-1.13.2
     opendistroforelasticsearch_package: "{{ os_opendistroforelasticsearch_package[ansible_os_family] }}"
     os_opendistroforelasticsearch_flags:
       FreeBSD: |
