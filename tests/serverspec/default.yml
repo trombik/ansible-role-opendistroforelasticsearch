@@ -42,7 +42,7 @@
       Debian:
         # XXX install elasticsearch-oss that opendistroforelasticsearch
         # requires.
-        - elasticsearch-oss=7.9.1
+        - elasticsearch-oss=7.10.2
         - unzip
       RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
@@ -85,9 +85,6 @@
       -Xms1024m
       -Xmx1024m
       -Xmx1g
-      -XX:+UseConcMarkSweepGC
-      -XX:CMSInitiatingOccupancyFraction=75
-      -XX:+UseCMSInitiatingOccupancyOnly
       -Des.networkaddress.cache.ttl=60
       -Des.networkaddress.cache.negative.ttl=10
       -XX:+AlwaysPreTouch
@@ -153,9 +150,7 @@
     # XXX see version matrix at https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/
     opendistroforelasticsearch_plugins:
       - name: opendistro_security
-        src: "{{ project_opendistro_plugin_base_url }}/opendistro-security/opendistro_security-1.3.0.0.zip"
-      - name: opendistro_alerting
-        src: "{{ project_opendistro_plugin_base_url }}/opendistro-alerting/opendistro_alerting-1.3.0.1.zip"
+        src: "{{ project_opendistro_plugin_base_url }}/opendistro-security/opendistro-security-1.13.1.0.zip"
     opendistroforelasticsearch_extra_plugin_files:
       - path: opendistro_security/securityconfig/roles.yml
         type: yaml

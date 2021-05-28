@@ -13,7 +13,8 @@ es_user_group = "elasticsearch"
 java_home = ""
 jvm_option = "#{es_config_dir}/jvm.options"
 plugins = [
-  "opendistro_security"
+  "opendistro_security",
+  "opendistro-alerting"
 ]
 es_extra_packages = []
 extra_files = %w[
