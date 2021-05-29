@@ -1,3 +1,18 @@
+## Release 1.1.4
+
+* 7526ba8 bugfix: add release GitHub Actions workflow
+* f28b7a7 bugfix: support log4j2.properties
+* ea01a54 bugfix: update to 1.13.2 on CentOS
+* da93915 bugfix: QA
+* 6ccf6bc bugfix: fix regexp in tests
+* 20c91ca bugfix: update elasticsearch and plugins
+* c463ce6 bugfix: QA
+* 0b9bd93 bugfix: QA
+* 7f07957 ci: add Github Actions workflows
+* 1c0c1f4 bugfix: update README
+* a591f80 bugfix: replace hard-coded numbers with variables
+* 8586cdb bugfix: update CentOS to 7.8, Ubuntu to 20.04
+
 ## Release 1.1.3
 
 * 8c06a6f doc: update README
