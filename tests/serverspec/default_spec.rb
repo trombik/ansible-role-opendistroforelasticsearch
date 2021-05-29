@@ -11,7 +11,7 @@ es_config_dir = "/etc/elasticsearch"
 es_user_name = "elasticsearch"
 es_user_group = "elasticsearch"
 java_home = ""
-jvm_option = "#{es_config_dir}/jvm.options"
+
 plugins = [
   # XXX depending on versions, some plugins have -, others `_`.
   "opendistro[-_]security",
@@ -49,7 +49,6 @@ when "freebsd"
   es_plugins_directory = "/usr/local/lib/elasticsearch/plugins"
   es_data_directory = "/var/db/elasticsearch"
   java_home = "/usr/local"
-  jvm_option = "/usr/local/etc/elasticsearch/jvm.options"
 when "openbsd"
   default_group = "wheel"
   es_user_name = "_elasticsearch"
@@ -60,6 +59,9 @@ when "openbsd"
 when "ubuntu"
   es_extra_packages = ["elasticsearch-oss"]
 end
+
+jvm_option = "#{es_config_dir}/jvm.options"
+log4j2_properties = "#{es_config_dir}/log4j2.properties"
 
 describe file es_config_dir do
   it { should exist }
@@ -103,6 +105,14 @@ describe file jvm_option do
   it { should be_owned_by es_user_name }
   it { should be_grouped_into es_user_group }
   its(:content) { should match(Regexp.escape("-XX:+UseCompressedOops")) }
+end
+
+describe file log4j2_properties do
+  it { should be_file }
+  it { should be_mode 644 }
+  it { should be_owned_by es_user_name }
+  it { should be_grouped_into es_user_group }
+  its(:content) { should match(/Managed by ansible/) }
 end
 
 case os[:family]

@@ -15,6 +15,7 @@ opendistroforelasticsearch_jvm_options: ""
 opendistroforelasticsearch_conf_file: "{{ opendistroforelasticsearch_conf_dir }}/elasticsearch.yml"
 opendistroforelasticsearch_flags: ""
 opendistroforelasticsearch_config: ""
+opendistroforelasticsearch_config_log4j2_properties: ""
 opendistroforelasticsearch_http_port: 9200
 opendistroforelasticsearch_java_home: "{{ __opendistroforelasticsearch_java_home }}"
 opendistroforelasticsearch_extra_plugin_files: []

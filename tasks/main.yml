@@ -58,6 +58,16 @@
   notify:
     - Restart opendistroforelasticsearch
 
+- name: Create log4j2.properties
+  template:
+    src: log4j2.properties.j2
+    dest: "{{ opendistroforelasticsearch_conf_dir }}/log4j2.properties"
+    owner: "{{ opendistroforelasticsearch_user }}"
+    group: "{{ opendistroforelasticsearch_group }}"
+    mode: 0644
+  notify:
+    - Restart opendistroforelasticsearch
+
 - name: Create elasticsearch.yml
   template:
     src: elasticsearch.yml.j2

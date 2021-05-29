@@ -39,6 +39,7 @@ dependency because TLS is not mandatory.
 | `opendistroforelasticsearch_conf_file` | path to `elasticsearch.yml` | `{{ opendistroforelasticsearch_conf_dir }}/elasticsearch.yml` |
 | `opendistroforelasticsearch_flags` | extra flags for startup scripts | `""` |
 | `opendistroforelasticsearch_config` | the content of `elasticsearch.yml` | `""` |
+| `opendistroforelasticsearch_config_log4j2_properties` | the content of `log4j2.properties` | `""` |
 | `opendistroforelasticsearch_http_port` | listen port of `elasticsearch` | `9200` |
 | `opendistroforelasticsearch_java_home` | `JAVA_HOME` environment variable | `{{ __opendistroforelasticsearch_java_home }}` |
 | `opendistroforelasticsearch_extra_plugin_files` | a list of extra files for plug-ins (see below) | `[]` |
@@ -167,7 +168,7 @@ dict.
       Debian:
         # XXX install elasticsearch-oss that opendistroforelasticsearch
         # requires.
-        - elasticsearch-oss=7.9.1
+        - elasticsearch-oss=7.10.2
         - unzip
       RedHat: []
     opendistroforelasticsearch_extra_packages: "{{ os_opendistroforelasticsearch_extra_packages[ansible_os_family] }}"
@@ -190,7 +191,7 @@ dict.
     os_opendistroforelasticsearch_package:
       FreeBSD: "{{ __opendistroforelasticsearch_package }}"
       Debian: "{{ __opendistroforelasticsearch_package }}"
-      RedHat: opendistroforelasticsearch-1.2.0-1
+      RedHat: opendistroforelasticsearch-1.13.2
     opendistroforelasticsearch_package: "{{ os_opendistroforelasticsearch_package[ansible_os_family] }}"
     os_opendistroforelasticsearch_flags:
       FreeBSD: |
@@ -210,9 +211,6 @@ dict.
       -Xms1024m
       -Xmx1024m
       -Xmx1g
-      -XX:+UseConcMarkSweepGC
-      -XX:CMSInitiatingOccupancyFraction=75
-      -XX:+UseCMSInitiatingOccupancyOnly
       -Des.networkaddress.cache.ttl=60
       -Des.networkaddress.cache.negative.ttl=10
       -XX:+AlwaysPreTouch
@@ -278,9 +276,7 @@ dict.
     # XXX see version matrix at https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/
     opendistroforelasticsearch_plugins:
       - name: opendistro_security
-        src: "{{ project_opendistro_plugin_base_url }}/opendistro-security/opendistro_security-1.3.0.0.zip"
-      - name: opendistro_alerting
-        src: "{{ project_opendistro_plugin_base_url }}/opendistro-alerting/opendistro_alerting-1.3.0.1.zip"
+        src: "{{ project_opendistro_plugin_base_url }}/opendistro-security/opendistro-security-1.13.1.0.zip"
     opendistroforelasticsearch_extra_plugin_files:
       - path: opendistro_security/securityconfig/roles.yml
         type: yaml
@@ -330,6 +326,188 @@ dict.
           http_authenticator:
             type: basic
             challenge: true
+
+    # taken from config/log4j2.properties
+    opendistroforelasticsearch_config_log4j2_properties: |
+      status = error
+
+      appender.console.type = Console
+      appender.console.name = console
+      appender.console.layout.type = PatternLayout
+      appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
+
+      ######## Server JSON ############################
+      appender.rolling.type = RollingFile
+      appender.rolling.name = rolling
+      appender.rolling.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}_server.json
+      appender.rolling.layout.type = ESJsonLayout
+      appender.rolling.layout.type_name = server
+
+      appender.rolling.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}-%d{yyyy-MM-dd}-%i.json.gz
+      appender.rolling.policies.type = Policies
+      appender.rolling.policies.time.type = TimeBasedTriggeringPolicy
+      appender.rolling.policies.time.interval = 1
+      appender.rolling.policies.time.modulate = true
+      appender.rolling.policies.size.type = SizeBasedTriggeringPolicy
+      appender.rolling.policies.size.size = 128MB
+      appender.rolling.strategy.type = DefaultRolloverStrategy
+      appender.rolling.strategy.fileIndex = nomax
+      appender.rolling.strategy.action.type = Delete
+      appender.rolling.strategy.action.basepath = ${sys:es.logs.base_path}
+      appender.rolling.strategy.action.condition.type = IfFileName
+      appender.rolling.strategy.action.condition.glob = ${sys:es.logs.cluster_name}-*
+      appender.rolling.strategy.action.condition.nested_condition.type = IfAccumulatedFileSize
+      appender.rolling.strategy.action.condition.nested_condition.exceeds = 2GB
+      ################################################
+      ######## Server -  old style pattern ###########
+      appender.rolling_old.type = RollingFile
+      appender.rolling_old.name = rolling_old
+      appender.rolling_old.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}.log
+      appender.rolling_old.layout.type = PatternLayout
+      appender.rolling_old.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
+
+      appender.rolling_old.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}-%d{yyyy-MM-dd}-%i.log.gz
+      appender.rolling_old.policies.type = Policies
+      appender.rolling_old.policies.time.type = TimeBasedTriggeringPolicy
+      appender.rolling_old.policies.time.interval = 1
+      appender.rolling_old.policies.time.modulate = true
+      appender.rolling_old.policies.size.type = SizeBasedTriggeringPolicy
+      appender.rolling_old.policies.size.size = 128MB
+      appender.rolling_old.strategy.type = DefaultRolloverStrategy
+      appender.rolling_old.strategy.fileIndex = nomax
+      appender.rolling_old.strategy.action.type = Delete
+      appender.rolling_old.strategy.action.basepath = ${sys:es.logs.base_path}
+      appender.rolling_old.strategy.action.condition.type = IfFileName
+      appender.rolling_old.strategy.action.condition.glob = ${sys:es.logs.cluster_name}-*
+      appender.rolling_old.strategy.action.condition.nested_condition.type = IfAccumulatedFileSize
+      appender.rolling_old.strategy.action.condition.nested_condition.exceeds = 2GB
+      ################################################
+
+      rootLogger.level = info
+      rootLogger.appenderRef.console.ref = console
+      rootLogger.appenderRef.rolling.ref = rolling
+      rootLogger.appenderRef.rolling_old.ref = rolling_old
+
+      ######## Deprecation JSON #######################
+      appender.deprecation_rolling.type = RollingFile
+      appender.deprecation_rolling.name = deprecation_rolling
+      appender.deprecation_rolling.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}_deprecation.json
+      appender.deprecation_rolling.layout.type = ESJsonLayout
+      appender.deprecation_rolling.layout.type_name = deprecation
+      appender.deprecation_rolling.layout.esmessagefields=x-opaque-id
+      appender.deprecation_rolling.filter.rate_limit.type = RateLimitingFilter
+
+      appender.deprecation_rolling.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}_deprecation-%i.json.gz
+      appender.deprecation_rolling.policies.type = Policies
+      appender.deprecation_rolling.policies.size.type = SizeBasedTriggeringPolicy
+      appender.deprecation_rolling.policies.size.size = 1GB
+      appender.deprecation_rolling.strategy.type = DefaultRolloverStrategy
+      appender.deprecation_rolling.strategy.max = 4
+
+      appender.header_warning.type = HeaderWarningAppender
+      appender.header_warning.name = header_warning
+      #################################################
+      ######## Deprecation -  old style pattern #######
+      appender.deprecation_rolling_old.type = RollingFile
+      appender.deprecation_rolling_old.name = deprecation_rolling_old
+      appender.deprecation_rolling_old.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}_deprecation.log
+      appender.deprecation_rolling_old.layout.type = PatternLayout
+      appender.deprecation_rolling_old.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
+
+      appender.deprecation_rolling_old.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}\
+        _deprecation-%i.log.gz
+      appender.deprecation_rolling_old.policies.type = Policies
+      appender.deprecation_rolling_old.policies.size.type = SizeBasedTriggeringPolicy
+      appender.deprecation_rolling_old.policies.size.size = 1GB
+      appender.deprecation_rolling_old.strategy.type = DefaultRolloverStrategy
+      appender.deprecation_rolling_old.strategy.max = 4
+      #################################################
+      logger.deprecation.name = org.elasticsearch.deprecation
+      logger.deprecation.level = deprecation
+      logger.deprecation.appenderRef.deprecation_rolling.ref = deprecation_rolling
+      logger.deprecation.appenderRef.deprecation_rolling_old.ref = deprecation_rolling_old
+      logger.deprecation.appenderRef.header_warning.ref = header_warning
+      logger.deprecation.additivity = false
+
+      ######## Search slowlog JSON ####################
+      appender.index_search_slowlog_rolling.type = RollingFile
+      appender.index_search_slowlog_rolling.name = index_search_slowlog_rolling
+      appender.index_search_slowlog_rolling.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs\
+        .cluster_name}_index_search_slowlog.json
+      appender.index_search_slowlog_rolling.layout.type = ESJsonLayout
+      appender.index_search_slowlog_rolling.layout.type_name = index_search_slowlog
+      appender.index_search_slowlog_rolling.layout.esmessagefields=message,took,took_millis,total_hits,types,stats,search_type,total_shards,source,id
+
+      appender.index_search_slowlog_rolling.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs\
+        .cluster_name}_index_search_slowlog-%i.json.gz
+      appender.index_search_slowlog_rolling.policies.type = Policies
+      appender.index_search_slowlog_rolling.policies.size.type = SizeBasedTriggeringPolicy
+      appender.index_search_slowlog_rolling.policies.size.size = 1GB
+      appender.index_search_slowlog_rolling.strategy.type = DefaultRolloverStrategy
+      appender.index_search_slowlog_rolling.strategy.max = 4
+      #################################################
+      ######## Search slowlog -  old style pattern ####
+      appender.index_search_slowlog_rolling_old.type = RollingFile
+      appender.index_search_slowlog_rolling_old.name = index_search_slowlog_rolling_old
+      appender.index_search_slowlog_rolling_old.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}\
+        _index_search_slowlog.log
+      appender.index_search_slowlog_rolling_old.layout.type = PatternLayout
+      appender.index_search_slowlog_rolling_old.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
+
+      appender.index_search_slowlog_rolling_old.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}\
+        _index_search_slowlog-%i.log.gz
+      appender.index_search_slowlog_rolling_old.policies.type = Policies
+      appender.index_search_slowlog_rolling_old.policies.size.type = SizeBasedTriggeringPolicy
+      appender.index_search_slowlog_rolling_old.policies.size.size = 1GB
+      appender.index_search_slowlog_rolling_old.strategy.type = DefaultRolloverStrategy
+      appender.index_search_slowlog_rolling_old.strategy.max = 4
+      #################################################
+      logger.index_search_slowlog_rolling.name = index.search.slowlog
+      logger.index_search_slowlog_rolling.level = trace
+      logger.index_search_slowlog_rolling.appenderRef.index_search_slowlog_rolling.ref = index_search_slowlog_rolling
+      logger.index_search_slowlog_rolling.appenderRef.index_search_slowlog_rolling_old.ref = index_search_slowlog_rolling_old
+      logger.index_search_slowlog_rolling.additivity = false
+
+      ######## Indexing slowlog JSON ##################
+      appender.index_indexing_slowlog_rolling.type = RollingFile
+      appender.index_indexing_slowlog_rolling.name = index_indexing_slowlog_rolling
+      appender.index_indexing_slowlog_rolling.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}\
+        _index_indexing_slowlog.json
+      appender.index_indexing_slowlog_rolling.layout.type = ESJsonLayout
+      appender.index_indexing_slowlog_rolling.layout.type_name = index_indexing_slowlog
+      appender.index_indexing_slowlog_rolling.layout.esmessagefields=message,took,took_millis,doc_type,id,routing,source
+
+      appender.index_indexing_slowlog_rolling.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}\
+        _index_indexing_slowlog-%i.json.gz
+      appender.index_indexing_slowlog_rolling.policies.type = Policies
+      appender.index_indexing_slowlog_rolling.policies.size.type = SizeBasedTriggeringPolicy
+      appender.index_indexing_slowlog_rolling.policies.size.size = 1GB
+      appender.index_indexing_slowlog_rolling.strategy.type = DefaultRolloverStrategy
+      appender.index_indexing_slowlog_rolling.strategy.max = 4
+      #################################################
+      ######## Indexing slowlog -  old style pattern ##
+      appender.index_indexing_slowlog_rolling_old.type = RollingFile
+      appender.index_indexing_slowlog_rolling_old.name = index_indexing_slowlog_rolling_old
+      appender.index_indexing_slowlog_rolling_old.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}\
+        _index_indexing_slowlog.log
+      appender.index_indexing_slowlog_rolling_old.layout.type = PatternLayout
+      appender.index_indexing_slowlog_rolling_old.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
+
+      appender.index_indexing_slowlog_rolling_old.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}\
+        _index_indexing_slowlog-%i.log.gz
+      appender.index_indexing_slowlog_rolling_old.policies.type = Policies
+      appender.index_indexing_slowlog_rolling_old.policies.size.type = SizeBasedTriggeringPolicy
+      appender.index_indexing_slowlog_rolling_old.policies.size.size = 1GB
+      appender.index_indexing_slowlog_rolling_old.strategy.type = DefaultRolloverStrategy
+      appender.index_indexing_slowlog_rolling_old.strategy.max = 4
+      #################################################
+
+      logger.index_indexing_slowlog.name = index.indexing.slowlog.index
+      logger.index_indexing_slowlog.level = trace
+      logger.index_indexing_slowlog.appenderRef.index_indexing_slowlog_rolling.ref = index_indexing_slowlog_rolling
+      logger.index_indexing_slowlog.appenderRef.index_indexing_slowlog_rolling_old.ref = index_indexing_slowlog_rolling_old
+      logger.index_indexing_slowlog.additivity = false
+
     x509_certificate_debug_log: yes
     # XXX these keys were create by the following steps described at:
     # https://opendistro.github.io/for-elasticsearch-docs/docs/security-configuration/generate-certificates/
