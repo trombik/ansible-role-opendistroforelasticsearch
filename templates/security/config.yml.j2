@@ -1,0 +1,2 @@
+{% set default_yaml = lookup('file', 'security/config.yml') %}
+{{ default_yaml | from_yaml | combine(opendistroforelasticsearch_securityconf_config, recursive=opendistroforelasticsearch_securityconf_config_recursive_merge) | to_nice_yaml }}

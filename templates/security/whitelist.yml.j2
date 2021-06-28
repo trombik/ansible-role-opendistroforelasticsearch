@@ -1,0 +1,2 @@
+{% set default_yaml = lookup('file', 'security/whitelist.yml') %}
+{{ default_yaml | from_yaml | combine(opendistroforelasticsearch_securityconf_whitelist, recursive=opendistroforelasticsearch_securityconf_whitelist_recursive_merge) | to_nice_yaml }}

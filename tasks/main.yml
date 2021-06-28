@@ -78,6 +78,24 @@
   notify:
     - Restart opendistroforelasticsearch
 
+- name: Get current keystore configs
+  shell: "{{ opendistroforelasticsearch_keystore_command }} list"
+  environment:
+    JAVA_HOME: "{{ opendistroforelasticsearch_java_home }}"
+  register: keystore_list_output
+  when:
+    - "{{ opendistroforelasticsearch_remove_bootstrap_password }}"
+
+- name: Remove bootstrap.password
+  shell: "{{ opendistroforelasticsearch_keystore_command }} remove bootstrap.password"
+  become: true
+  become_user: "{{ opendistroforelasticsearch_user }}"
+  environment:
+    JAVA_HOME: "{{ opendistroforelasticsearch_java_home }}"
+  when:
+    - "{{ opendistroforelasticsearch_remove_bootstrap_password }}"
+    - "'bootstrap.password' in keystore_list_output.stdout_lines"
+
 - name: Register installed plugins
   shell: "{{ opendistroforelasticsearch_plugin_command }} list"
   environment:
@@ -97,6 +115,7 @@
   command: "{{ opendistroforelasticsearch_plugin_command }} install --batch {% if 'src' in item %}{{ item.src }}{% else %}{{ item.name }}{% endif %}"
   environment:
     JAVA_HOME: "{{ opendistroforelasticsearch_java_home }}"
+    ES_PATH_CONF: "{{ opendistroforelasticsearch_conf_dir }}"
   with_items: "{{ opendistroforelasticsearch_plugins }}"
   when:
     - "(not 'state' in item ) or (item['state'] == 'present')"
@@ -132,6 +151,40 @@
     - "'state' in item"
     - "item['state'] == 'absent'"
 
+- name: find demo certificate files
+  find:
+    paths: "{{ opendistroforelasticsearch_conf_dir }}"
+    patterns: "*.pem"
+  register: files_to_delete
+  when:
+    - opendistroforelasticsearch_remove_demo_certs
+
+- name: Remove demo certificate files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"
+  when:
+    - opendistroforelasticsearch_remove_demo_certs
+
+- name: "Create {{ item }}"
+  template:
+    src: "security/{{ item }}.j2"
+    dest: "{{ opendistroforelasticsearch_plugins_dir }}/opendistro_security/securityconfig/{{ item }}"
+    mode: 0640
+    owner: "{{ opendistroforelasticsearch_user }}"
+    group: "{{ opendistroforelasticsearch_group }}"
+  with_items:
+    - action_groups.yml
+    - audit.yml
+    - config.yml
+    - internal_users.yml
+    - nodes_dn.yml
+    - roles.yml
+    - roles_mapping.yml
+    - tenants.yml
+    - whitelist.yml
+
 - name: Start opendistroforelasticsearch
   service:
     name: "{{ opendistroforelasticsearch_service }}"
@@ -145,3 +198,13 @@
     port: "{{ opendistroforelasticsearch_http_port }}"
   when:
     - register_elasticsearch_start.changed
+
+- name: Reload security config
+  shell:
+    cmd: "{{ opendistroforelasticsearch_plugins_dir }}/opendistro_security/tools/securityadmin.sh {{ opendistroforelasticsearch_reload_security_config_args }}"
+    chdir: "{{ opendistroforelasticsearch_plugins_dir }}/opendistro_security/securityconfig/"
+  when:
+    - opendistroforelasticsearch_reload_security_config
+  run_once: True
+  retries: "{{ opendistroforelasticsearch_reload_security_config_retries }}"
+  delay: "{{ opendistroforelasticsearch_reload_security_config_delay }}"

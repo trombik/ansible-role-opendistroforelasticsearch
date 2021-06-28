@@ -1,0 +1,2 @@
+{% set default_yaml = lookup('file', 'security/nodes_dn.yml') %}
+{{ default_yaml | from_yaml | combine(opendistroforelasticsearch_securityconf_nodes_dn, recursive=opendistroforelasticsearch_securityconf_nodes_dn_recursive_merge) | to_nice_yaml }}
