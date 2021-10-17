@@ -1,0 +1,2 @@
+{% set default_yaml = lookup('file', 'security/internal_users.yml') %}
+{{ default_yaml | from_yaml | combine(opendistroforelasticsearch_securityconf_internal_users, recursive=opendistroforelasticsearch_securityconf_internal_users_recursive_merge) | to_nice_yaml }}

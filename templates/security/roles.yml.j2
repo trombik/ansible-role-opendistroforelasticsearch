@@ -1,0 +1,2 @@
+{% set default_yaml = lookup('file', 'security/roles.yml') %}
+{{ default_yaml | from_yaml | combine(opendistroforelasticsearch_securityconf_roles, recursive=opendistroforelasticsearch_securityconf_roles_recursive_merge) | to_nice_yaml }}

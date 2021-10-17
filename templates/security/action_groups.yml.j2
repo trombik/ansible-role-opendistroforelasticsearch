@@ -1,0 +1,2 @@
+{% set default_yaml = lookup('file', 'security/action_groups.yml') %}
+{{ default_yaml | from_yaml | combine(opendistroforelasticsearch_securityconf_action_groups, recursive=opendistroforelasticsearch_securityconf_action_groups_recursive_merge) | to_nice_yaml }}
